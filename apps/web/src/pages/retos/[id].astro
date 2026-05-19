@@ -1,0 +1,70 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { ChallengePublic } from "@/lib/api/client";
+import { fetchPublicChallenge } from "@/lib/api/client";
+import {
+  fetchPublicChallengeFromSupabase,
+} from "@/lib/supabase/challenges";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/retos");
+}
+
+let challenge: ChallengePublic | null = null;
+let errorMessage: string | null = null;
+
+const supabase = createSupabaseServerClient(Astro.cookies);
+
+try {
+  challenge = await fetchPublicChallengeFromSupabase(supabase, id);
+} catch (supabaseErr) {
+  try {
+    challenge = await fetchPublicChallenge(id);
+  } catch {
+    errorMessage =
+      supabaseErr instanceof Error ? supabaseErr.message : "Reto no encontrado";
+  }
+}
+---
+
+<BaseLayout title={challenge ? `${challenge.title} — B2E` : "Reto — B2E"}>
+  {
+    errorMessage && (
+      <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">{errorMessage}</div>
+    )
+  }
+
+  {
+    challenge && (
+      <article>
+        <div class="mb-4 flex flex-wrap gap-2">
+          {challenge.categories.map((cat) => (
+            <span class="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+              {cat.name_es}
+            </span>
+          ))}
+        </div>
+        <h1 class="text-3xl font-bold">{challenge.title}</h1>
+        <p class="mt-4 whitespace-pre-wrap text-slate-700">{challenge.description}</p>
+
+        <section class="mt-8 rounded-xl bg-brand-50 p-6">
+          <h2 class="font-semibold text-brand-900">Impacto ambiental esperado</h2>
+          <p class="mt-2 text-slate-700">{challenge.environmental_impact.summary}</p>
+          <p class="mt-2 text-sm text-slate-600">
+            Métrica: {challenge.environmental_impact.expected_metric}{" "}
+            ({challenge.environmental_impact.metric_unit})
+          </p>
+        </section>
+
+        <p class="mt-8">
+          <a href="/auth/login" class="font-medium text-brand-600 hover:underline">
+            Inicia sesión como académico para postular una solución →
+          </a>
+        </p>
+      </article>
+    )
+  }
+</BaseLayout>

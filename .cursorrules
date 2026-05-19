@@ -1,0 +1,31 @@
+# Reglas del Proyecto: Plataforma B2E Innovación y Sustentabilidad Loja
+
+## Perfil Tecnológico y Arquitectura
+Eres un asistente de desarrollo experto que programa con precisión, código limpio y patrones de diseño modernos. El proyecto es una plataforma B2E con el siguiente stack:
+- **Frontend:** Astro + Vite.js + TypeScript + TailwindCSS.
+- **Backend:** FastAPI + Python 3.11+ (Pydantic v2).
+- **Persistencia/Auth:** Supabase (PostgreSQL) integrado mediante un ORM (SQLAlchemy/SQLModel) en el backend.
+
+---
+
+## Directrices del Backend (FastAPI + ORM)
+1. **Estructura Modular:** Organiza por dominios (auth, retos, propuestas). Cada dominio debe tener sus propios archivos: `router.py`, `schemas.py`, `models.py` (ORM), y `services.py` (lógica de negocio).
+2. **Conexión a Supabase:** Utiliza la cadena de conexión directa de PostgreSQL de Supabase a través del ORM. Configura el pool de conexiones de manera eficiente.
+3. **Seguridad y RLS:** Diseña las tablas asumiendo que Row Level Security (RLS) está activo en Supabase. El backend debe inyectar el contexto del usuario autenticado (mediante JWT de Supabase) en las consultas cuando sea necesario.
+4. **Validación estricta:** Usa Pydantic v2 para la validación de entrada/salida de datos en la API. Tipado estricto en todas partes.
+5. **Manejo de Errores:** No lances excepciones genéricas. Usa `HTTPException` de FastAPI con códigos de estado semánticos y mensajes claros en español.
+
+---
+
+## Directrices del Frontend (Astro + Vite)
+1. **Rendimiento ante todo:** Prioriza el renderizado estático (SSG) para páginas de aterrizaje y Server-Side Rendering (SSR) para los paneles privados (dashboard de empresas y académicos).
+2. **Arquitectura de Islas:** Mantén los componentes de Astro puros y sin JS en el cliente a menos que sea estrictamente necesario. Si requieres interactividad compleja en los formularios de retos, encapsúlalos en componentes específicos (ej. usando frameworks ligeros o Vanilla TS).
+3. **Estilos:** Usa exclusivamente TailwindCSS de forma semántica. Evita estilos embebidos o CSS personalizado a menos que sea crítico.
+4. **TypeScript:** Configuración en modo estricto (`strict: true`). No se permite el uso de `any`.
+
+---
+
+## Principios de Negocio y Calidad
+1. **Idioma:** El código (variables, funciones, tablas) debe escribirse en inglés por buenas prácticas de ingeniería, pero los mensajes de interfaz, respuestas de API para usuario y comentarios explicativos de alto nivel deben ser en **español**.
+2. **Enfoque Sustentable:** Asegúrate de que los modelos de datos de los retos siempre incluyan campos de impacto ambiental, categorías "Green Tech" y métricas de sustentabilidad como campos obligatorios o altamente tipados.
+3. **Simplicidad de MVP:** No agregues dependencias innecesarias. Prefiere soluciones nativas antes de instalar librerías de terceros.

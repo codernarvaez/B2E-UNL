@@ -1,0 +1,54 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ChallengeCard from "@/components/ChallengeCard.astro";
+import type { ChallengePublic } from "@/lib/api/client";
+import { fetchPublicChallenges } from "@/lib/api/client";
+import { fetchPublicChallengesFromSupabase } from "@/lib/supabase/challenges";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+let challenges: ChallengePublic[] = [];
+let errorMessage: string | null = null;
+const supabase = createSupabaseServerClient(Astro.cookies);
+
+try {
+  challenges = await fetchPublicChallengesFromSupabase(supabase);
+} catch (supabaseErr) {
+  try {
+    challenges = await fetchPublicChallenges();
+  } catch {
+    const msg =
+      supabaseErr instanceof Error ? supabaseErr.message : "Error al cargar retos";
+    errorMessage = msg;
+  }
+}
+---
+
+<BaseLayout title="Tablero de retos — B2E Loja" description="Retos abiertos de empresas con enfoque sustentable">
+  <section>
+    <h1 class="text-3xl font-bold text-slate-900">Tablero de retos abiertos</h1>
+    <p class="mt-2 text-slate-600">
+      Desafíos publicados por empresas de la Cámara de Comercio con categorías Green Tech.
+    </p>
+
+    {
+      errorMessage && (
+        <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          No se pudo cargar el tablero: {errorMessage}. Revisa las variables
+          PUBLIC_SUPABASE_* en tu archivo .env de la raíz del proyecto.
+        </div>
+      )
+    }
+
+    {
+      !errorMessage && challenges.length === 0 && (
+        <p class="mt-8 text-slate-500">No hay retos publicados en este momento.</p>
+      )
+    }
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2">
+      {challenges.map((challenge) => (
+        <ChallengeCard challenge={challenge} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,169 @@
+---
+import LogoutButton from "@/components/LogoutButton.astro";
+
+interface Props {
+  currentPath?: string;
+  isAuthenticated?: boolean;
+  userEmail?: string | null;
+}
+
+const {
+  currentPath = Astro.url.pathname,
+  isAuthenticated = false,
+  userEmail = null,
+} = Astro.props;
+
+const isRetos = currentPath.startsWith("/retos");
+const displayEmail = userEmail ? userEmail.split("@")[0] : "";
+---
+
+<header class="sticky top-0 z-50 border-b border-brand-100/80 bg-white/90 shadow-sm backdrop-blur-md">
+  <nav
+    class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3"
+    aria-label="Navegación principal"
+  >
+    <a href="/" class="group flex items-center gap-2.5">
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-500/30 transition group-hover:scale-105"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </span>
+      <span>
+        <span class="block text-lg font-bold leading-tight text-brand-900">B2E Loja</span>
+        <span class="block text-[10px] font-medium uppercase tracking-wider text-brand-600/80">
+          Innovación sustentable
+        </span>
+      </span>
+    </a>
+
+    <!-- Desktop -->
+    <div class="hidden items-center gap-2 md:flex">
+      <a
+        href="/retos"
+        data-nav-link
+        class:list={[
+          "group relative flex items-center gap-2 overflow-hidden rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300",
+          isRetos
+            ? "bg-gradient-to-r from-brand-600 to-emerald-500 text-white shadow-lg shadow-brand-500/40"
+            : "bg-gradient-to-r from-brand-600 to-emerald-500 text-white shadow-md shadow-brand-500/25 hover:scale-[1.03] hover:shadow-lg hover:shadow-brand-500/40",
+        ]}
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        Tablero de retos
+        <span
+          class="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-full"
+        ></span>
+      </a>
+
+      {
+        isAuthenticated ? (
+          <>
+            <span
+              class="max-w-[140px] truncate rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600"
+              title={userEmail ?? ""}
+            >
+              {displayEmail}
+            </span>
+            <a
+              href="/dashboard"
+              data-nav-link
+              class="rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800 transition hover:bg-brand-100"
+            >
+              Panel
+            </a>
+            <LogoutButton />
+          </>
+        ) : (
+          <>
+            <a
+              href="/auth/registro-empresa"
+              data-nav-link
+              class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-50 hover:text-brand-700"
+            >
+              Registrar empresa
+            </a>
+            <a
+              href="/auth/login"
+              data-nav-link
+              class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+            >
+              Ingresar
+            </a>
+          </>
+        )
+      }
+    </div>
+
+    <button
+      id="nav-toggle"
+      type="button"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 md:hidden"
+      aria-expanded="false"
+      aria-controls="nav-mobile-menu"
+      aria-label="Abrir menú"
+    >
+      <svg id="nav-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </nav>
+
+  <div id="nav-backdrop" class="fixed inset-0 z-40 hidden bg-slate-900/40 md:hidden" aria-hidden="true"></div>
+
+  <!-- Mobile menu -->
+  <div
+    id="nav-mobile-menu"
+    class="hidden border-t border-brand-100 bg-white px-4 py-4 md:hidden"
+    role="dialog"
+    aria-label="Menú móvil"
+  >
+    <div class="flex flex-col gap-2">
+      <a
+        href="/retos"
+        data-nav-link
+        class="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 px-4 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-brand-500/30"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        Explorar tablero de retos
+      </a>
+
+      {
+        isAuthenticated ? (
+          <>
+            <p class="rounded-lg bg-slate-100 px-4 py-2 text-xs text-slate-600">
+              Sesión: <span class="font-medium">{userEmail}</span>
+            </p>
+            <a href="/dashboard" data-nav-link class="rounded-lg border border-slate-200 px-4 py-3 text-sm font-medium">
+              Ir al panel
+            </a>
+            <LogoutButton variant="menu" />
+          </>
+        ) : (
+          <>
+            <a
+              href="/auth/registro-empresa"
+              data-nav-link
+              class="rounded-lg bg-brand-50 px-4 py-3 text-sm font-medium text-brand-800"
+            >
+              Registrar empresa
+            </a>
+            <a href="/auth/login" data-nav-link class="rounded-lg px-4 py-3 text-sm font-medium text-slate-700">
+              Ingresar
+            </a>
+          </>
+        )
+      }
+    </div>
+  </div>
+</header>
+
+<script>
+  import { initSiteNav } from "@/islands/SiteNav";
+  initSiteNav();
+</script>

@@ -1,0 +1,60 @@
+---
+import AwardedProjects from "@/components/AwardedProjects.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="B2E Loja — Innovación y Sustentabilidad"
+  description="Conectamos empresas de la Cámara de Comercio con la academia de la UNL para resolver retos sustentables."
+>
+  <section class="py-12 text-center">
+    <p class="text-sm font-semibold uppercase tracking-wide text-brand-600">
+      Business to Education
+    </p>
+    <h1 class="mt-4 text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+      Matchmaking de retos<br />
+      <span class="text-brand-600">sustentables</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+      Las empresas publican desafíos técnicos con impacto ambiental. Investigadores y estudiantes
+      de la UNL postulan soluciones innovadoras.
+    </p>
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
+      <a
+        href="/retos"
+        class="rounded-lg bg-brand-600 px-6 py-3 font-medium text-white hover:bg-brand-700"
+      >
+        Explorar retos abiertos
+      </a>
+      <a
+        href="/auth/login"
+        class="rounded-lg border border-slate-300 px-6 py-3 font-medium hover:bg-slate-100"
+      >
+        Iniciar sesión
+      </a>
+    </div>
+  </section>
+
+  <section class="mt-16 grid gap-8 md:grid-cols-3">
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <h3 class="font-semibold text-brand-700">Empresas</h3>
+      <p class="mt-2 text-sm text-slate-600">
+        Publica retos con categorías Green Tech y métricas de impacto ambiental obligatorias.
+      </p>
+    </div>
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <h3 class="font-semibold text-brand-700">Academia</h3>
+      <p class="mt-2 text-sm text-slate-600">
+        Explora el tablero público y envía propuestas alineadas a la sustentabilidad.
+      </p>
+    </div>
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <h3 class="font-semibold text-brand-700">Workflow</h3>
+      <p class="mt-2 text-sm text-slate-600">
+        Abierto → En evaluación → En desarrollo → Cerrado.
+      </p>
+    </div>
+  </section>
+
+  <AwardedProjects />
+</BaseLayout>

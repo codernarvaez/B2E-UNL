@@ -1,0 +1,34 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthDivider from "@/components/AuthDivider.astro";
+import CompanyRegisterForm from "@/islands/CompanyRegisterForm.astro";
+import OAuthButtons from "@/islands/OAuthButtons.astro";
+---
+
+<BaseLayout
+  title="Registro de empresa — B2E Loja"
+  description="Registra tu empresa en la plataforma B2E para publicar retos sustentables"
+>
+  <section class="mx-auto max-w-2xl">
+    <h1 class="text-2xl font-bold text-slate-900">Registro de empresa</h1>
+    <p class="mt-2 text-sm text-slate-600">
+      Cámara de Comercio de Loja — regístrate con Google o GitHub (SSO) o con correo y contraseña.
+      Después de SSO completarás los datos comerciales.
+    </p>
+
+    <div class="mt-6 rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50/80 to-white p-6 shadow-sm">
+      <p class="mb-4 text-sm font-medium text-brand-800">Acceso rápido con SSO</p>
+      <OAuthButtons intent="company" />
+    </div>
+
+    <AuthDivider />
+    <p class="text-center text-sm font-medium text-slate-700">Registro con correo electrónico</p>
+
+    <CompanyRegisterForm />
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+      ¿Ya tienes cuenta?
+      <a href="/auth/login" class="font-medium text-brand-600 hover:underline">Iniciar sesión</a>
+    </p>
+  </section>
+</BaseLayout>

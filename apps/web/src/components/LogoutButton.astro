@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+  variant?: "header" | "menu";
+}
+
+const { class: className = "", variant = "header" } = Astro.props;
+
+const baseClass =
+  variant === "header"
+    ? "rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+    : "w-full rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-800 hover:bg-red-100";
+---
+
+<form id="header-logout-form" method="POST" action="/auth/logout" class="inline">
+  <button type="submit" class:list={[baseClass, className]}>
+    Cerrar sesión
+  </button>
+</form>

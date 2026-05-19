@@ -1,0 +1,36 @@
+<div id="login-form-root" class="mt-6">
+  <p data-error class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert"></p>
+  <form class="space-y-4">
+    <div>
+      <label for="email" class="block text-sm font-medium text-slate-700">Correo</label>
+      <input
+        id="email"
+        type="email"
+        required
+        class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+      />
+    </div>
+    <div>
+      <label for="password" class="block text-sm font-medium text-slate-700">Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        required
+        class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+      />
+    </div>
+    <button
+      type="submit"
+      class="w-full rounded-lg bg-brand-600 py-2.5 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+    >
+      Ingresar
+    </button>
+  </form>
+</div>
+
+<script>
+  import { initLoginForm } from "./LoginForm";
+
+  const root = document.getElementById("login-form-root");
+  if (root) initLoginForm(root);
+</script>

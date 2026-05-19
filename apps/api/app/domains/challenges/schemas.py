@@ -1,0 +1,70 @@
+from datetime import date, datetime
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.domains.challenges.models import ChallengeStatus
+
+
+class EnvironmentalImpact(BaseModel):
+    summary: str = Field(..., min_length=10)
+    expected_metric: str = Field(..., min_length=1)
+    metric_unit: str = Field(..., min_length=1)
+
+
+class SustainabilityCategoryRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    slug: str
+    name_es: str
+    description_es: str | None
+
+
+class ChallengeCreate(BaseModel):
+    title: str = Field(..., min_length=5, max_length=200)
+    description: str = Field(..., min_length=20)
+    environmental_impact: EnvironmentalImpact
+    category_ids: list[UUID] = Field(..., min_length=1)
+    deadline: date | None = None
+
+
+class ChallengeUpdate(BaseModel):
+    title: str | None = Field(None, min_length=5, max_length=200)
+    description: str | None = Field(None, min_length=20)
+    environmental_impact: EnvironmentalImpact | None = None
+    category_ids: list[UUID] | None = None
+    deadline: date | None = None
+
+
+class ChallengeStatusUpdate(BaseModel):
+    status: ChallengeStatus
+
+
+class ChallengeRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    company_id: UUID
+    title: str
+    description: str
+    status: ChallengeStatus
+    environmental_impact: dict[str, str]
+    deadline: date | None
+    published_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+    categories: list[SustainabilityCategoryRead] = []
+
+
+class ChallengePublicRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    title: str
+    description: str
+    status: ChallengeStatus
+    environmental_impact: dict[str, str]
+    deadline: date | None
+    published_at: datetime | None
+    categories: list[SustainabilityCategoryRead] = []

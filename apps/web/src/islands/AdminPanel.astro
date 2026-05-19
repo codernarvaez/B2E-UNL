@@ -1,0 +1,81 @@
+---
+import type { AdminChallengeRow, AdminProposalRow, AdminStats } from "@/lib/supabase/admin";
+import type { ProfileRow } from "@/lib/supabase/profile";
+
+interface Props {
+  stats: AdminStats;
+  profiles: ProfileRow[];
+  challenges: AdminChallengeRow[];
+  proposals: AdminProposalRow[];
+}
+
+const { stats, profiles, challenges, proposals } = Astro.props;
+const adminJson = JSON.stringify({ stats, profiles, challenges, proposals });
+---
+
+<div id="admin-panel-root">
+  <script id="admin-data" type="application/json" set:html={adminJson} />
+
+  <div data-toast class="hidden" role="status"></div>
+
+  <nav class="mt-6 flex flex-wrap gap-1 border-b border-slate-200">
+    <button
+      type="button"
+      data-tab="companies"
+      class="border-b-2 border-brand-600 px-4 py-2 text-sm font-medium text-brand-700"
+    >
+      Empresas pendientes ({stats.companiesPending})
+    </button>
+    <button
+      type="button"
+      data-tab="accounts"
+      class="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-slate-500"
+    >
+      Cuentas ({profiles.length})
+    </button>
+    <button
+      type="button"
+      data-tab="challenges"
+      class="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-slate-500"
+    >
+      Retos ({stats.challenges})
+    </button>
+    <button
+      type="button"
+      data-tab="proposals"
+      class="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-slate-500"
+    >
+      Propuestas ({stats.proposals})
+    </button>
+  </nav>
+
+  <section data-panel="companies" class="mt-6 space-y-4">
+    <h2 class="text-lg font-semibold">Aprobación de empresas</h2>
+    <p class="text-sm text-slate-600">
+      Revisa los datos comerciales y aprueba o rechaza el acceso para publicar retos.
+    </p>
+    <div data-list class="space-y-4"></div>
+  </section>
+
+  <section data-panel="accounts" class="mt-6 hidden">
+    <h2 class="text-lg font-semibold">Gestión de cuentas</h2>
+    <ul data-list class="mt-4 max-h-[28rem] space-y-2 overflow-y-auto"></ul>
+  </section>
+
+  <section data-panel="challenges" class="mt-6 hidden">
+    <h2 class="text-lg font-semibold">Retos registrados</h2>
+    <p class="text-sm text-slate-600">Cambiar estado o publicar en el tablero público.</p>
+    <div data-list class="mt-4 max-h-[28rem] space-y-4 overflow-y-auto"></div>
+  </section>
+
+  <section data-panel="proposals" class="mt-6 hidden">
+    <h2 class="text-lg font-semibold">Propuestas de academia</h2>
+    <ul data-list class="mt-4 max-h-[28rem] space-y-2 overflow-y-auto"></ul>
+  </section>
+</div>
+
+<script>
+  import { initAdminPanel } from "./AdminPanel";
+  const root = document.getElementById("admin-panel-root");
+  if (root) initAdminPanel(root);
+</script>

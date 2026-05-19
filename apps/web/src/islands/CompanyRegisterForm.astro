@@ -1,0 +1,163 @@
+<div id="company-register-root" class="mt-6">
+  <p data-error class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert"></p>
+  <p data-success class="hidden rounded-lg bg-green-50 p-3 text-sm text-green-800" role="status"></p>
+
+  <form class="space-y-6">
+    <fieldset class="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+      <legend class="text-sm font-semibold text-brand-800">Datos de la empresa</legend>
+
+      <div>
+        <label for="organization_name" class="block text-sm font-medium text-slate-700">
+          Razón social / nombre comercial *
+        </label>
+        <input
+          id="organization_name"
+          type="text"
+          required
+          minlength="2"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Ej. Industrias Loja S.A."
+        />
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="tax_id" class="block text-sm font-medium text-slate-700">RUC *</label>
+          <input
+            id="tax_id"
+            type="text"
+            required
+            minlength="10"
+            maxlength="13"
+            pattern="[0-9]{10,13}"
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. 1791234567001"
+          />
+        </div>
+        <div>
+          <label for="business_sector" class="block text-sm font-medium text-slate-700">
+            Sector / actividad *
+          </label>
+          <input
+            id="business_sector"
+            type="text"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. Agroindustria, manufactura"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="address" class="block text-sm font-medium text-slate-700">Dirección comercial *</label>
+        <input
+          id="address"
+          type="text"
+          required
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Ciudad, calle y número"
+        />
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="phone" class="block text-sm font-medium text-slate-700">Teléfono *</label>
+          <input
+            id="phone"
+            type="tel"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. 0991234567"
+          />
+        </div>
+        <div>
+          <label for="website" class="block text-sm font-medium text-slate-700">Sitio web</label>
+          <input
+            id="website"
+            type="url"
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="https://miempresa.com"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+      <legend class="text-sm font-semibold text-brand-800">Representante y acceso</legend>
+
+      <div>
+        <label for="full_name" class="block text-sm font-medium text-slate-700">
+          Nombre del representante *
+        </label>
+        <input
+          id="full_name"
+          type="text"
+          required
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+        />
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-700">Correo de acceso *</label>
+          <input
+            id="email"
+            type="email"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          />
+        </div>
+        <div>
+          <label for="contact_email" class="block text-sm font-medium text-slate-700">
+            Correo de contacto comercial
+          </label>
+          <input
+            id="contact_email"
+            type="email"
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Opcional si es distinto al de acceso"
+          />
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-700">Contraseña *</label>
+          <input
+            id="password"
+            type="password"
+            required
+            minlength="8"
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          />
+        </div>
+        <div>
+          <label for="password_confirm" class="block text-sm font-medium text-slate-700">
+            Confirmar contraseña *
+          </label>
+          <input
+            id="password_confirm"
+            type="password"
+            required
+            minlength="8"
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <button
+      type="submit"
+      class="w-full rounded-lg bg-brand-600 py-3 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+    >
+      Registrar empresa
+    </button>
+  </form>
+</div>
+
+<script>
+  import { initCompanyRegisterForm } from "./CompanyRegisterForm";
+
+  const root = document.getElementById("company-register-root");
+  if (root) initCompanyRegisterForm(root);
+</script>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthDivider from "@/components/AuthDivider.astro";
+import LoginForm from "@/islands/LoginForm.astro";
+import OAuthButtons from "@/islands/OAuthButtons.astro";
+
+const oauthError = Astro.url.searchParams.get("error");
+const sessionReason = Astro.url.searchParams.get("reason");
+
+const reasonMessages: Record<string, string> = {
+  session_expired: "Tu sesión (JWT) expiró. Inicia sesión de nuevo.",
+  idle_timeout: "Se cerró la sesión por inactividad. Vuelve a ingresar.",
+  logged_out: "Has cerrado sesión correctamente.",
+};
+const reasonMessage = sessionReason ? reasonMessages[sessionReason] : null;
+---
+
+<BaseLayout title="Iniciar sesión — B2E Loja">
+  <section class="mx-auto max-w-md">
+    <h1 class="text-2xl font-bold">Iniciar sesión</h1>
+    <p class="mt-2 text-sm text-slate-600">
+      Accede con correo y contraseña o con tu cuenta de Google o GitHub. La sesión usa JWT con
+      tiempo de inactividad configurable.
+    </p>
+
+    {reasonMessage && (
+      <p class="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900" role="alert">
+        {reasonMessage}
+      </p>
+    )}
+
+    {
+      oauthError && (
+        <p class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+          {oauthError === "oauth_missing_code"
+            ? "No se recibió el código de autenticación. Intenta de nuevo."
+            : decodeURIComponent(oauthError)}
+        </p>
+      )
+    }
+
+    <OAuthButtons intent="login" />
+    <AuthDivider />
+    <LoginForm />
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+      ¿Eres una empresa?
+      <a href="/auth/registro-empresa" class="font-medium text-brand-600 hover:underline">
+        Registra tu empresa
+      </a>
+    </p>
+  </section>
+</BaseLayout>

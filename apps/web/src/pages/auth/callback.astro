@@ -1,0 +1,39 @@
+---
+import { needsCompanyProfileCompletion, dashboardPathForRole } from "@/lib/auth/company-profile";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchMyProfile } from "@/lib/supabase/profile";
+
+const code = Astro.url.searchParams.get("code");
+const intentParam = Astro.url.searchParams.get("intent");
+const intent = intentParam === "company" ? "company" : "login";
+
+if (!code) {
+  return Astro.redirect("/auth/login?error=oauth_missing_code");
+}
+
+const supabase = createSupabaseServerClient(Astro.cookies);
+const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+if (error) {
+  return Astro.redirect(`/auth/login?error=${encodeURIComponent(error.message)}`);
+}
+
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect("/auth/login?error=oauth_no_session");
+}
+
+const profile = await fetchMyProfile(supabase, session.user.id);
+
+if (intent === "company" || needsCompanyProfileCompletion(profile)) {
+  if (needsCompanyProfileCompletion(profile)) {
+    return Astro.redirect("/auth/completar-empresa");
+  }
+}
+
+const destination = dashboardPathForRole(profile?.role ?? "academic");
+return Astro.redirect(destination);
+---

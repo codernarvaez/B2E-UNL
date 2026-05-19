@@ -1,0 +1,30 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./apps/api/app:/app/app:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=4321
+    depends_on:
+      - api

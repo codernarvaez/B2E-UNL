@@ -1,0 +1,64 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchWithAuth } from "@/lib/api/client";
+
+const supabase = createSupabaseServerClient(Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect("/auth/login");
+}
+
+interface Challenge {
+  id: string;
+  title: string;
+  status: string;
+  published_at: string | null;
+}
+
+let challenges: Challenge[] = [];
+let errorMessage: string | null = null;
+
+try {
+  challenges = await fetchWithAuth<Challenge[]>(
+    "/api/v1/challenges/mine",
+    session.access_token,
+  );
+} catch (err) {
+  errorMessage = err instanceof Error ? err.message : "Error al cargar retos";
+}
+---
+
+<BaseLayout title="Mis retos — Empresa">
+  <section>
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Mis retos</h1>
+      <a href="/dashboard" class="text-sm text-brand-600 hover:underline">← Panel</a>
+    </div>
+
+    {errorMessage && <p class="mt-4 text-red-600">{errorMessage}</p>}
+
+    {
+      challenges.length === 0 && !errorMessage && (
+        <p class="mt-6 text-slate-500">Aún no has creado retos.</p>
+      )
+    }
+
+    <ul class="mt-6 space-y-4">
+      {
+        challenges.map((c) => (
+          <li class="rounded-lg border border-slate-200 bg-white p-4">
+            <h2 class="font-semibold">{c.title}</h2>
+            <p class="text-sm text-slate-500">
+              Estado: {c.status}
+              {c.published_at ? " · Publicado" : " · Borrador"}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

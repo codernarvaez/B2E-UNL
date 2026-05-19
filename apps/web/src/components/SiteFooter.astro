@@ -1,0 +1,70 @@
+---
+const partners = [
+  {
+    name: "Cámara de Comercio de Loja — CADECOL",
+    src: "/images/partners/cadecol.png",
+    href: "https://www.camaradeloja.org.ec",
+    height: "h-14",
+  },
+  {
+    name: "Universidad Nacional de Loja",
+    src: "/images/partners/unl.png",
+    href: "https://www.unl.edu.ec",
+    height: "h-12",
+  },
+  {
+    name: "Carrera de Ingeniería en Sistemas / Computación — UNL",
+    src: "/images/partners/ingenieria-sistemas.png",
+    href: "https://www.unl.edu.ec",
+    height: "h-14",
+  },
+  {
+    name: "Centro de Investigación en Tecnologías — CIT",
+    src: "/images/partners/cit.png",
+    href: "https://www.unl.edu.ec",
+    height: "h-14",
+  },
+];
+---
+
+<footer class="mt-16 border-t border-slate-200 bg-white">
+  <div class="mx-auto max-w-6xl px-4 py-10">
+    <p class="text-center text-sm font-medium text-slate-700">
+      Alianza estratégica
+    </p>
+    <p class="mt-1 text-center text-xs text-slate-500">
+      Cámara de Comercio de Loja × Universidad Nacional de Loja
+    </p>
+
+    <ul
+      class="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-8"
+      aria-label="Logos de instituciones aliadas"
+    >
+      {
+        partners.map((partner) => (
+          <li>
+            <a
+              href={partner.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block opacity-90 transition hover:opacity-100"
+              title={partner.name}
+            >
+              <img
+                src={partner.src}
+                alt={partner.name}
+                class:list={["w-auto max-w-[200px] object-contain", partner.height]}
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-10 text-center text-xs text-slate-400">
+      Plataforma B2E — Innovación y sustentabilidad · Loja, Ecuador
+    </p>
+  </div>
+</footer>
