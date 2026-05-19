@@ -190,7 +190,13 @@ En GitHub → **Settings → Branches** → ruleset para `main`:
 ### Verificar qué se va a commitear
 
 ```bash
-git init
+make verify-git
+# o: bash scripts/verify-before-push.sh
+```
+
+El script comprueba que `.env`, `node_modules/`, `dist/`, `__pycache__/`, etc. **no** estén en el índice de Git.
+
+```bash
 git add .
 git status
 ```

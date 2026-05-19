@@ -9,5 +9,4 @@ paths = [
   '''\.env\.example$''',
   '''^README\.md$''',
   '''^supabase/migrations/''',
-  '''^scripts/seed-admin-user\.py$''',
 ]

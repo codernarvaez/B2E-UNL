@@ -1,4 +1,4 @@
-.PHONY: help dev-api dev-web supabase-start supabase-reset test-api install setup-env seed-admin
+.PHONY: help dev-api dev-web supabase-start supabase-reset test-api install setup-env seed-admin verify-git
 
 help:
 	@echo "Comandos B2E (ejecutar desde la raíz del repo):"
@@ -6,6 +6,7 @@ help:
 	@echo "  make dev-api      → FastAPI en http://127.0.0.1:8000"
 	@echo "  make install      → dependencias api + web"
 	@echo "  make seed-admin   → usuario admin@unl.edu.ec"
+	@echo "  make verify-git   → validar .gitignore antes de push"
 	@echo "  npm run dev:web   → alternativa sin make"
 
 .DEFAULT_GOAL := help
@@ -19,6 +20,9 @@ setup-env:
 
 seed-admin:
 	python3 scripts/seed-admin-user.py
+
+verify-git:
+	bash scripts/verify-before-push.sh
 
 supabase-start:
 	supabase start

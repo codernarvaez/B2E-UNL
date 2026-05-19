@@ -13,8 +13,20 @@ ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = ROOT / ".env"
 
 ADMIN_EMAIL = "admin@unl.edu.ec"
-ADMIN_PASSWORD = "Prueba.21"
 ADMIN_NAME = "Administrador UNL"
+
+
+def get_admin_password() -> str:
+    pwd = os.environ.get("ADMIN_PASSWORD", "").strip()
+    if not pwd:
+        pwd = load_env().get("ADMIN_PASSWORD", "").strip()
+    if not pwd:
+        print(
+            "Define ADMIN_PASSWORD en .env o en el entorno (no se sube a GitHub).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return pwd
 
 
 def load_env() -> dict[str, str]:
@@ -88,6 +100,8 @@ def main() -> int:
         print("Faltan PUBLIC_SUPABASE_URL y PUBLIC_SUPABASE_ANON_KEY en .env", file=sys.stderr)
         return 1
 
+    admin_password = get_admin_password()
+
     headers = {
         "apikey": anon_key,
         "Authorization": f"Bearer {anon_key}",
@@ -101,7 +115,7 @@ def main() -> int:
         headers,
         {
             "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD,
+            "password": admin_password,
             "data": {"full_name": ADMIN_NAME},
         },
     )
@@ -129,7 +143,7 @@ def main() -> int:
         )
 
     print(f"\n  Email:    {ADMIN_EMAIL}")
-    print(f"  Password: {ADMIN_PASSWORD}")
+    print("  Password: (la definida en ADMIN_PASSWORD de tu .env local)")
     print("  Login:    http://127.0.0.1:4321/auth/login")
     return 0
 
