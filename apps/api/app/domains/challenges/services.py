@@ -30,9 +30,7 @@ def _load_challenge(db: Session, challenge_id: UUID) -> Challenge | None:
     return db.scalar(
         select(Challenge)
         .where(Challenge.id == challenge_id)
-        .options(
-            selectinload(Challenge.category_links).selectinload(ChallengeCategory.category)
-        )
+        .options(selectinload(Challenge.category_links).selectinload(ChallengeCategory.category))
     )
 
 
@@ -51,9 +49,7 @@ def _set_categories(db: Session, challenge: Challenge, category_ids: list[UUID])
 
 
 def challenge_to_read(challenge: Challenge) -> dict:
-    categories = [
-        link.category for link in challenge.category_links if link.category is not None
-    ]
+    categories = [link.category for link in challenge.category_links if link.category is not None]
     data = {
         "id": challenge.id,
         "company_id": challenge.company_id,
@@ -171,9 +167,15 @@ def transition_status(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reto no encontrado")
 
     if profile.role == UserRole.company and challenge.company_id != profile.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Sin permiso sobre este reto")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Sin permiso sobre este reto",
+        )
     if profile.role not in (UserRole.company, UserRole.admin):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Sin permiso para cambiar estado")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Sin permiso para cambiar estado",
+        )
 
     allowed = ALLOWED_TRANSITIONS.get(challenge.status, set())
     if data.status not in allowed:
@@ -195,4 +197,5 @@ def get_challenge(db: Session, challenge_id: UUID) -> Challenge:
 
 
 def list_categories(db: Session) -> list[SustainabilityCategory]:
-    return list(db.scalars(select(SustainabilityCategory).order_by(SustainabilityCategory.name_es)).all())
+    stmt = select(SustainabilityCategory).order_by(SustainabilityCategory.name_es)
+    return list(db.scalars(stmt).all())
