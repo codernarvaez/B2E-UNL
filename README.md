@@ -3,6 +3,8 @@
 Plataforma **Business-to-Education (B2E)** que conecta la **Cámara de Comercio de Loja (CADECOL)** con la **Universidad Nacional de Loja (UNL)** para el matchmaking de retos técnicos con impacto ambiental y categorías Green Tech.
 
 [![CI](https://github.com/codernarvaez/B2E-UNL/actions/workflows/ci.yml/badge.svg)](https://github.com/codernarvaez/B2E-UNL/actions/workflows/ci.yml)
+[![DevSecOps](https://github.com/codernarvaez/B2E-UNL/actions/workflows/devsecops.yml/badge.svg)](https://github.com/codernarvaez/B2E-UNL/actions/workflows/devsecops.yml)
+[![CodeQL](https://github.com/codernarvaez/B2E-UNL/actions/workflows/codeql.yml/badge.svg)](https://github.com/codernarvaez/B2E-UNL/actions/workflows/codeql.yml)
 
 ## Características
 
@@ -146,6 +148,42 @@ Crea el usuario definido en `scripts/seed-admin-user.py`. **Cambia la contraseñ
 | `company` | Publica retos (requiere aprobación admin) |
 | `academic` | Postula soluciones |
 | `admin` | Gestión de plataforma |
+
+## DevSecOps (GitHub Actions)
+
+Pipelines en `.github/workflows/`:
+
+| Workflow | Disparadores | Qué hace |
+|----------|--------------|----------|
+| [**CI**](.github/workflows/ci.yml) | push/PR `main`, `develop` | Ruff + pytest (API), Astro check + build (web) |
+| [**DevSecOps**](.github/workflows/devsecops.yml) | push/PR + cron semanal | Gitleaks, npm/pip audit, Bandit SAST, Trivy (fs + Dockerfiles) |
+| [**CodeQL**](.github/workflows/codeql.yml) | push/PR + cron semanal | Análisis semántico JS/TS y Python |
+
+**Dependabot** (`.github/dependabot.yml`): actualizaciones semanales de npm, pip y GitHub Actions.
+
+### Gates de seguridad
+
+- **Gitleaks**: bloquea si detecta secretos (`.gitleaks.toml` excluye `.env.example`).
+- **Bandit**: bloquea hallazgos medium+ en `apps/api/app`.
+- **Trivy**: reporta CRITICAL/HIGH en SARIF (pestaña Security del repo).
+- **npm audit / pip-audit**: advierten vulnerabilidades (npm en modo warning inicial).
+
+### Ejecutar checks en local
+
+```bash
+# API
+cd apps/api && pip install -e ".[dev]" && ruff check app && pytest -q && bandit -r app -ll
+
+# Web
+cd apps/web && npm ci && npm run check && npm run build:ci
+```
+
+### Protección de rama (recomendado)
+
+En GitHub → **Settings → Branches** → ruleset para `main`:
+
+- Require status checks: `CI — resumen`, `DevSecOps — resumen`, `CodeQL — javascript-typescript`, `CodeQL — python`
+- Require PR antes de merge
 
 ## Subir a GitHub
 

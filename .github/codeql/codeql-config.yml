@@ -1,0 +1,15 @@
+name: "B2E CodeQL"
+
+paths:
+  - apps/web
+  - apps/api
+
+paths-ignore:
+  - "**/node_modules"
+  - "**/dist"
+  - "**/.astro"
+  - "**/__pycache__"
+  - "**/tests"
+
+queries:
+  - uses: security-and-quality

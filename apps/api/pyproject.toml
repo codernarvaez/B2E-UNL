@@ -19,6 +19,9 @@ dev = [
   "pytest>=8.3.0",
   "pytest-asyncio>=0.24.0",
   "httpx>=0.28.0",
+  "ruff>=0.8.0",
+  "bandit[toml]>=1.8.0",
+  "pip-audit>=2.7.0",
 ]
 
 [build-system]
@@ -32,3 +35,15 @@ include = ["app*"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["app"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]

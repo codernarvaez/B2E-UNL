@@ -34,6 +34,5 @@ if (intent === "company" || needsCompanyProfileCompletion(profile)) {
   }
 }
 
-const destination = dashboardPathForRole(profile?.role ?? "academic");
-return Astro.redirect(destination);
+return Astro.redirect(dashboardPathForRole(profile?.role ?? "academic"));
 ---

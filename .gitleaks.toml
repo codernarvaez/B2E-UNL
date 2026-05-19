@@ -1,0 +1,13 @@
+title = "B2E Gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Plantillas y documentación sin secretos reales"
+paths = [
+  '''\.env\.example$''',
+  '''^README\.md$''',
+  '''^supabase/migrations/''',
+  '''^scripts/seed-admin-user\.py$''',
+]

@@ -9,8 +9,16 @@ type CategoryRow = {
 };
 
 type ChallengeCategoryRow = {
-  sustainability_categories: CategoryRow | null;
+  sustainability_categories: CategoryRow | CategoryRow[] | null;
 };
+
+function flattenCategories(links: ChallengeCategoryRow[] | null): CategoryRow[] {
+  return (links ?? []).flatMap((link) => {
+    const raw = link.sustainability_categories;
+    if (!raw) return [];
+    return Array.isArray(raw) ? raw : [raw];
+  });
+}
 
 type ChallengeRow = {
   id: string;
@@ -59,9 +67,7 @@ export async function fetchPublicChallengesFromSupabase(
   const rows = (data ?? []) as ChallengeRow[];
 
   return rows.map((row) => {
-    const categories: SustainabilityCategory[] = (row.challenge_categories ?? [])
-      .map((link) => link.sustainability_categories)
-      .filter((cat): cat is CategoryRow => cat !== null);
+    const categories: SustainabilityCategory[] = flattenCategories(row.challenge_categories);
 
     return {
       id: row.id,
@@ -114,9 +120,7 @@ export async function fetchPublicChallengeFromSupabase(
   }
 
   const row = data as ChallengeRow;
-  const categories: SustainabilityCategory[] = (row.challenge_categories ?? [])
-    .map((link) => link.sustainability_categories)
-    .filter((cat): cat is CategoryRow => cat !== null);
+  const categories: SustainabilityCategory[] = flattenCategories(row.challenge_categories);
 
   return {
     id: row.id,
