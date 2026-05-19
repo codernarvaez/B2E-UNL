@@ -2,7 +2,7 @@
 
 Plataforma **Business-to-Education (B2E)** que conecta la **Cámara de Comercio de Loja (CADECOL)** con la **Universidad Nacional de Loja (UNL)** para el matchmaking de retos técnicos con impacto ambiental y categorías Green Tech.
 
-[![CI](https://github.com/TU_USUARIO/TU_REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/TU_USUARIO/TU_REPO/actions/workflows/ci.yml)
+[![CI](https://github.com/codernarvaez/B2E-UNL/actions/workflows/ci.yml/badge.svg)](https://github.com/codernarvaez/B2E-UNL/actions/workflows/ci.yml)
 
 ## Características
 
@@ -50,8 +50,8 @@ B2E/
 ### 1. Clonar e instalar
 
 ```bash
-git clone https://github.com/TU_USUARIO/b2e-loja.git
-cd b2e-loja
+git clone https://github.com/codernarvaez/B2E-UNL.git
+cd B2E-UNL
 
 make install
 # o: npm run install:all
@@ -179,7 +179,7 @@ Debe listar reglas de `.gitignore` para cada ruta.
 ```bash
 git commit -m "chore: initial commit — plataforma B2E Loja"
 git branch -M main
-git remote add origin https://github.com/TU_USUARIO/b2e-loja.git
+git remote add origin https://github.com/codernarvaez/B2E-UNL.git
 git push -u origin main
 ```
 
