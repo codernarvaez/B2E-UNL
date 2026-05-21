@@ -34,7 +34,7 @@ jobs:
             paths: apps/api
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Inicializar CodeQL
         uses: github/codeql-action/init@v3
