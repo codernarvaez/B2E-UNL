@@ -12,7 +12,16 @@
 credentials.json
 service-account*.json
 secrets/
-
+.env.example
+.env.example*
+.cursorrules
+.cursorrules*
+.codegraph
+.codegraph*
+.codegraph/
+.codegraph/*
+.codegraph.*
+.codegraph.*/*
 # --- Node.js (cualquier ubicación en el monorepo) ---
 node_modules/
 **/node_modules/
@@ -89,3 +98,4 @@ Thumbs.db
 # --- Logs ---
 *.log
 logs/
+
