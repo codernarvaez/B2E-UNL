@@ -65,11 +65,15 @@ supabase/.branches/
 supabase/.temp/
 supabase/.env
 
-# --- IDE, agentes y herramientas locales ---
+# --- IDE, agentes y herramientas locales (no subir a GitHub) ---
 .idea/
 .vscode/
+.cursor
 .cursor/
+**/.cursor/
+.codegraph
 .codegraph/
+**/.codegraph/
 assets/
 *.swp
 *.swo

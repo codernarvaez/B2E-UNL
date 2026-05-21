@@ -10,6 +10,7 @@ Plataforma **Business-to-Education (B2E)** que conecta la **Cámara de Comercio 
 
 - Tablero público de retos sustentables (`/retos`)
 - Registro de empresas (correo/contraseña o SSO Google y GitHub)
+- **Gestión de retos empresariales**: crear borrador, requerimiento técnico, métricas de impacto, publicar en tablero y seguimiento de propuestas (`/dashboard/empresa`)
 - Roles: `company`, `academic`, `admin` con aprobación de empresas
 - Panel administrativo (empresas pendientes, retos, propuestas)
 - Sesión con JWT (Supabase), aviso de expiración y cierre por inactividad
@@ -33,7 +34,7 @@ B2E/
 ├── supabase/
 │   ├── migrations/   # Esquema SQL (fuente de verdad)
 │   └── seed.sql
-├── scripts/          # setup-env, seed-admin
+├── scripts/          # setup-env, validate, test-db, verify-before-push
 ├── .env.example      # Plantilla de variables (sí se sube a Git)
 ├── Makefile
 └── docker-compose.yml
@@ -70,7 +71,7 @@ cp .env.example .env
 Completa en `.env` (desde el [dashboard de Supabase](https://supabase.com/dashboard) → Settings → API):
 
 - `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`
-- `DATABASE_URL` — copia la cadena **Session pooler** (puerto **5432**, usuario `postgres.hzfkoxvqtemflpokaqnw`). No uses `:6543` con ese usuario en `aws-0-*.pooler.supabase.com` (provoca *Tenant or user not found*).
+- `DATABASE_URL` — copia la cadena exacta desde **Dashboard → Connect** (proyecto `hzfkoxvqtemflpokaqnw`). Suele ser `postgres.hzfkoxvqtemflpokaqnw` en `aws-1-us-east-1.pooler.supabase.com` (puerto **6543** o **5432** según el modo que muestre el dashboard). No inventes el host `aws-0-*` si tu proyecto usa `aws-1-*` (*Tenant or user not found*).
 - `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` (mismos valores públicos para Astro)
 
 Prueba la base de datos:
@@ -128,6 +129,8 @@ Crea el usuario definido en `scripts/seed-admin-user.py`. **Cambia la contraseñ
 | Tablero de retos | http://127.0.0.1:4321/retos |
 | Login | http://127.0.0.1:4321/auth/login |
 | Registro empresa | http://127.0.0.1:4321/auth/registro-empresa |
+| Panel empresa (mis retos) | http://127.0.0.1:4321/dashboard/empresa |
+| Crear reto | http://127.0.0.1:4321/dashboard/empresa/nuevo |
 | API (OpenAPI) | http://127.0.0.1:8000/docs |
 
 ## OAuth (Google / GitHub)
@@ -151,7 +154,7 @@ Crea el usuario definido en `scripts/seed-admin-user.py`. **Cambia la contraseñ
 
 | Rol | Descripción |
 |-----|-------------|
-| `company` | Publica retos (requiere aprobación admin) |
+| `company` | Crea y gestiona retos (requiere aprobación admin para publicar en tablero) |
 | `academic` | Postula soluciones |
 | `admin` | Gestión de plataforma |
 
@@ -212,7 +215,7 @@ make verify-git
 # o: bash scripts/verify-before-push.sh
 ```
 
-El script comprueba que `.env`, `node_modules/`, `dist/`, `__pycache__/`, etc. **no** estén en el índice de Git.
+El script comprueba que secretos, dependencias, artefactos de build y carpetas de herramientas locales **no** estén en el índice de Git.
 
 ```bash
 git add .
@@ -225,16 +228,24 @@ git status
 - `node_modules/`
 - `apps/web/dist/`
 - `.venv/` o `__pycache__/`
+- `.cursor/` — configuración local de Cursor IDE
+- `.codegraph/` — cachés locales de CodeGraph
 
-Si `.env` aparece en `git status`, detente: revisa que exista en `.gitignore`.
+Si alguna ruta sensible aparece en `git status`, detente y revisa `.gitignore`. El archivo `.cursorrules` en la raíz **sí puede** versionarse (reglas del proyecto); la carpeta `.cursor/` no.
 
 Prueba explícita:
 
 ```bash
-git check-ignore -v .env apps/web/node_modules apps/web/dist
+git check-ignore -v .env .cursor .codegraph apps/web/node_modules apps/web/dist
 ```
 
 Debe listar reglas de `.gitignore` para cada ruta.
+
+Si `.cursor` o `.codegraph` se subieron antes por error:
+
+```bash
+git rm -r --cached .cursor .codegraph 2>/dev/null || true
+```
 
 ### Primer push
 
@@ -264,6 +275,9 @@ Requiere `.env` en la raíz del proyecto.
 
 ```bash
 make help          # Lista de comandos
+make validate      # .env, Supabase (HTTPS), servicios locales
+make test-db       # Probar conexión DATABASE_URL
+make verify-git    # Qué se subirá a GitHub (sin .env, .cursor, etc.)
 make test-api      # pytest en apps/api
 make seed-admin    # Usuario admin de prueba
 make supabase-reset  # Solo con Supabase CLI local
