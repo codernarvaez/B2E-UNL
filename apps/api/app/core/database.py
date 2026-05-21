@@ -6,11 +6,13 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
 
+# Transaction pooler (:6543) no admite prepared statements persistentes en psycopg3
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
+    connect_args={"prepare_threshold": None},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,4 +1,4 @@
-.PHONY: help dev-api dev-web supabase-start supabase-reset test-api install setup-env seed-admin verify-git
+.PHONY: help dev-api dev-web supabase-start supabase-reset test-api install setup-env seed-admin verify-git validate
 
 help:
 	@echo "Comandos B2E (ejecutar desde la raíz del repo):"
@@ -7,6 +7,8 @@ help:
 	@echo "  make install      → dependencias api + web"
 	@echo "  make seed-admin   → usuario admin@unl.edu.ec"
 	@echo "  make verify-git   → validar .gitignore antes de push"
+	@echo "  make validate     → validar .env, Supabase (HTTPS, sin ping) y servicios"
+	@echo "  make test-db      → probar conexión DATABASE_URL (Postgres)"
 	@echo "  npm run dev:web   → alternativa sin make"
 
 .DEFAULT_GOAL := help
@@ -23,6 +25,12 @@ seed-admin:
 
 verify-git:
 	bash scripts/verify-before-push.sh
+
+validate:
+	bash scripts/validate-project.sh
+
+test-db:
+	python3 scripts/test-db-connection.py
 
 supabase-start:
 	supabase start

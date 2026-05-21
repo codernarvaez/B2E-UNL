@@ -16,9 +16,11 @@ try {
   try {
     challenges = await fetchPublicChallenges();
   } catch {
-    const msg =
+    const raw =
       supabaseErr instanceof Error ? supabaseErr.message : "Error al cargar retos";
-    errorMessage = msg;
+    errorMessage = raw.toLowerCase().includes("fetch failed")
+      ? "Sin conexión HTTPS a Supabase. El ping puede estar bloqueado en tu red; usa make validate o curl -I https://hzfkoxvqtemflpokaqnw.supabase.co"
+      : raw;
   }
 }
 ---

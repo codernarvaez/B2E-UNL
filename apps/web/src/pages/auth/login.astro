@@ -11,6 +11,8 @@ const reasonMessages: Record<string, string> = {
   session_expired: "Tu sesión (JWT) expiró. Inicia sesión de nuevo.",
   idle_timeout: "Se cerró la sesión por inactividad. Vuelve a ingresar.",
   logged_out: "Has cerrado sesión correctamente.",
+  supabase_offline:
+    "No se pudo conectar con Supabase por HTTPS. En esta red el ping suele estar bloqueado; valida con curl o make validate, no con ping.",
 };
 const reasonMessage = sessionReason ? reasonMessages[sessionReason] : null;
 ---

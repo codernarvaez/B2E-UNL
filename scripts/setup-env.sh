@@ -6,7 +6,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/.env"
 PROJECT_REF="hzfkoxvqtemflpokaqnw"
 API_URL="https://${PROJECT_REF}.supabase.co"
-POOLER="aws-0-us-east-1.pooler.supabase.com"
+# Pooler del proyecto b2e_ (copiar host exacto del dashboard si cambia)
+POOLER="aws-1-us-east-1.pooler.supabase.com"
+POOLER_PORT="6543"
 
 # Anon key publicada (segura para cliente; rotar en dashboard si se filtra)
 DEFAULT_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6ZmtveHZxdGVtZmxwb2thcW53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxOTQ0MzQsImV4cCI6MjA5NDc3MDQzNH0.T1Jk0Z5R1xdTgVqYBGW0lW1ML59OGLWl-yiB5RHG7O8"
@@ -36,7 +38,7 @@ SUPABASE_ANON_KEY=${DEFAULT_ANON}
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_JWT_SECRET=${JWT_SECRET}
 
-DATABASE_URL=postgresql+psycopg://postgres.${PROJECT_REF}:${ENC_PASSWORD}@${POOLER}:6543/postgres
+DATABASE_URL=postgresql+psycopg://postgres.${PROJECT_REF}:${ENC_PASSWORD}@${POOLER}:${POOLER_PORT}/postgres
 
 API_HOST=0.0.0.0
 API_PORT=8000

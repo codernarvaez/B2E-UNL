@@ -3,8 +3,9 @@ import "../styles/global.css";
 import SessionExpiryBanner from "@/components/SessionExpiryBanner.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
+import SupabaseOfflineBanner from "@/components/SupabaseOfflineBanner.astro";
 import { getServerSessionInfo } from "@/lib/auth/session-server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getServerSessionSafe } from "@/lib/supabase/safe-session";
 
 interface Props {
   title?: string;
@@ -13,10 +14,12 @@ interface Props {
 
 const { title = "B2E Loja", description = "Innovación y sustentabilidad" } = Astro.props;
 
-const supabase = createSupabaseServerClient(Astro.cookies);
-const {
-  data: { session },
-} = await supabase.auth.getSession();
+const { session, offline: supabaseOffline, errorMessage: supabaseError } =
+  await getServerSessionSafe(Astro.cookies);
+
+if (supabaseOffline && supabaseError) {
+  console.warn("[B2E] Supabase:", supabaseError);
+}
 
 const isAuthenticated = Boolean(session);
 const sessionInfo = session ? getServerSessionInfo(session) : null;
@@ -32,7 +35,8 @@ const sessionBootstrapJson = sessionInfo ? JSON.stringify(sessionInfo) : "";
     <title>{title}</title>
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
-    {isAuthenticated && <SessionExpiryBanner />}
+    {supabaseOffline && <SupabaseOfflineBanner message={supabaseError} />}
+    {isAuthenticated && !supabaseOffline && <SessionExpiryBanner />}
     <SiteHeader
       isAuthenticated={isAuthenticated}
       userEmail={session?.user.email ?? null}

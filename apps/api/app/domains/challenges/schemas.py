@@ -10,6 +10,24 @@ class EnvironmentalImpact(BaseModel):
     summary: str = Field(..., min_length=10)
     expected_metric: str = Field(..., min_length=1)
     metric_unit: str = Field(..., min_length=1)
+    baseline_situation: str | None = Field(
+        None,
+        min_length=10,
+        max_length=3000,
+        description="Línea base o situación actual",
+    )
+    success_criteria: str | None = Field(
+        None,
+        min_length=10,
+        max_length=3000,
+        description="Criterios de éxito medibles",
+    )
+    technical_scope: str | None = Field(
+        None,
+        min_length=10,
+        max_length=3000,
+        description="Alcance técnico y entregables esperados",
+    )
 
 
 class SustainabilityCategoryRead(BaseModel):

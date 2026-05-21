@@ -1,6 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
 import { isSessionExpired } from "@/lib/auth/session-server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getServerSessionSafe } from "@/lib/supabase/safe-session";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/auth/completar-empresa"];
 
@@ -13,17 +13,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  const supabase = createSupabaseServerClient(cookies);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { session, offline } = await getServerSessionSafe(cookies);
+
+  if (offline) {
+    return redirect(
+      `/auth/login?redirect=${encodeURIComponent(pathname)}&reason=supabase_offline`,
+    );
+  }
 
   if (!session) {
     return redirect(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
   }
 
   if (isSessionExpired(session)) {
-    await supabase.auth.signOut();
     return redirect(
       `/auth/login?redirect=${encodeURIComponent(pathname)}&reason=session_expired`,
     );

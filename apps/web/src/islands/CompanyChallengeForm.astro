@@ -1,0 +1,188 @@
+---
+interface Props {
+  mode?: "create" | "edit";
+  challengeId?: string;
+}
+
+const { mode = "create", challengeId } = Astro.props;
+---
+
+<div
+  id="company-challenge-form-root"
+  class="mt-6"
+  data-mode={mode}
+  data-challenge-id={challengeId ?? ""}
+>
+  <form class="space-y-8" novalidate>
+    <fieldset class="rounded-xl border border-slate-200 bg-white p-6">
+      <legend class="text-lg font-semibold text-slate-900">1. Identificación del reto</legend>
+      <p class="mt-1 text-sm text-slate-500">
+        Título claro y categorías Green Tech obligatorias para el tablero público.
+      </p>
+
+      <div class="mt-4">
+        <label for="title" class="block text-sm font-medium text-slate-700">Título del reto *</label>
+        <input
+          id="title"
+          name="title"
+          type="text"
+          required
+          minlength="5"
+          maxlength="200"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Ej. Optimización energética en línea de envasado"
+        />
+      </div>
+
+      <div class="mt-4">
+        <span class="block text-sm font-medium text-slate-700">Categorías de sustentabilidad *</span>
+        <div id="category-list" class="mt-2 grid gap-2 sm:grid-cols-2" data-categories-loading>
+          <p class="text-sm text-slate-500">Cargando categorías…</p>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label for="deadline" class="block text-sm font-medium text-slate-700">Fecha límite de postulación</label>
+        <input
+          id="deadline"
+          name="deadline"
+          type="date"
+          class="mt-1 rounded-lg border border-slate-300 px-3 py-2"
+        />
+      </div>
+    </fieldset>
+
+    <fieldset class="rounded-xl border border-slate-200 bg-white p-6">
+      <legend class="text-lg font-semibold text-slate-900">2. Requerimiento técnico</legend>
+      <p class="mt-1 text-sm text-slate-500">
+        Describe el problema, contexto operativo, restricciones y entregables esperados de la academia.
+      </p>
+
+      <div class="mt-4">
+        <label for="description" class="block text-sm font-medium text-slate-700">
+          Descripción del requerimiento *
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          required
+          minlength="20"
+          rows="6"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Problema actual, datos disponibles, tecnologías a considerar, entregables (informe, prototipo, piloto)…"
+        ></textarea>
+      </div>
+
+      <div class="mt-4">
+        <label for="technical_scope" class="block text-sm font-medium text-slate-700">
+          Alcance técnico y entregables
+        </label>
+        <textarea
+          id="technical_scope"
+          name="technical_scope"
+          rows="3"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Límites del proyecto, fases, criterios de aceptación técnicos…"
+        ></textarea>
+      </div>
+    </fieldset>
+
+    <fieldset class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-6">
+      <legend class="text-lg font-semibold text-emerald-900">3. Impacto ambiental y métricas</legend>
+      <p class="mt-1 text-sm text-emerald-800">
+        Campos obligatorios de sustentabilidad para la plataforma B2E.
+      </p>
+
+      <div class="mt-4">
+        <label for="impact_summary" class="block text-sm font-medium text-slate-700">
+          Resumen del impacto esperado *
+        </label>
+        <textarea
+          id="impact_summary"
+          name="impact_summary"
+          required
+          minlength="10"
+          rows="3"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+        ></textarea>
+      </div>
+
+      <div class="mt-4">
+        <label for="baseline_situation" class="block text-sm font-medium text-slate-700">
+          Línea base / situación actual
+        </label>
+        <textarea
+          id="baseline_situation"
+          name="baseline_situation"
+          rows="2"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Consumo actual, residuos, emisiones u otro indicador de partida…"
+        ></textarea>
+      </div>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="expected_metric" class="block text-sm font-medium text-slate-700">
+            Métrica objetivo *
+          </label>
+          <input
+            id="expected_metric"
+            name="expected_metric"
+            type="text"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. Reducción de consumo eléctrico"
+          />
+        </div>
+        <div>
+          <label for="metric_unit" class="block text-sm font-medium text-slate-700">Unidad *</label>
+          <input
+            id="metric_unit"
+            name="metric_unit"
+            type="text"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. % anual, t CO₂e, kWh"
+          />
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label for="success_criteria" class="block text-sm font-medium text-slate-700">
+          Criterios de éxito medibles
+        </label>
+        <textarea
+          id="success_criteria"
+          name="success_criteria"
+          rows="2"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Umbrales, plazos de medición, validación con datos de planta…"
+        ></textarea>
+      </div>
+    </fieldset>
+
+    <p data-error class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert"></p>
+
+    <div class="flex flex-wrap gap-3">
+      <button
+        type="submit"
+        class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
+      >
+        Guardar borrador
+      </button>
+      <a
+        href="/dashboard/empresa"
+        class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+      >
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  import { initCompanyChallengeForm } from "@/islands/CompanyChallengeForm";
+
+  const root = document.getElementById("company-challenge-form-root");
+  if (root) initCompanyChallengeForm(root);
+</script>

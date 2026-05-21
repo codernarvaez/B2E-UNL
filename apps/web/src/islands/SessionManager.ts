@@ -31,6 +31,10 @@ async function performLogout(reason: string) {
 }
 
 export function initSessionManager(bootstrap: SessionBootstrap) {
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    return;
+  }
+
   const banner = document.getElementById("session-expiry-banner");
   const messageEl = banner?.querySelector<HTMLElement>("[data-session-message]");
   const extendBtn = banner?.querySelector<HTMLButtonElement>("[data-session-extend]");

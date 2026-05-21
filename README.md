@@ -70,8 +70,14 @@ cp .env.example .env
 Completa en `.env` (desde el [dashboard de Supabase](https://supabase.com/dashboard) → Settings → API):
 
 - `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`
-- `DATABASE_URL` (contraseña de la base de datos)
+- `DATABASE_URL` — copia la cadena **Session pooler** (puerto **5432**, usuario `postgres.hzfkoxvqtemflpokaqnw`). No uses `:6543` con ese usuario en `aws-0-*.pooler.supabase.com` (provoca *Tenant or user not found*).
 - `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` (mismos valores públicos para Astro)
+
+Prueba la base de datos:
+
+```bash
+make test-db
+```
 
 Alternativa guiada:
 
@@ -176,6 +182,18 @@ cd apps/api && pip install -e ".[dev]" && ruff check app && pytest -q && bandit 
 
 # Web
 cd apps/web && npm ci && npm run check && npm run build:ci
+```
+
+### Validar entorno local
+
+```bash
+make validate
+```
+
+Comprueba `.env`, **HTTPS hacia Supabase** (no usa `ping`) y servicios en `:4321` / `:8000`. En redes de la UNL u otras institucionales el **ICMP (ping) suele estar bloqueado**; eso no significa que Supabase esté caído. Usa:
+
+```bash
+curl -I https://hzfkoxvqtemflpokaqnw.supabase.co
 ```
 
 ### Protección de rama (recomendado)

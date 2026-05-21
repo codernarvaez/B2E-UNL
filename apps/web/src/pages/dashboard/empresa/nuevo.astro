@@ -1,0 +1,24 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CompanyChallengeForm from "@/islands/CompanyChallengeForm.astro";
+import { isJwtExpired } from "@/lib/auth/jwt";
+import { readSessionFromCookies } from "@/lib/supabase/cookie-session";
+
+const session = readSessionFromCookies(Astro.cookies);
+
+if (!session?.access_token || isJwtExpired(session.access_token)) {
+  return Astro.redirect("/auth/login?redirect=/dashboard/empresa/nuevo");
+}
+---
+
+<BaseLayout title="Nuevo reto — Empresa">
+  <section>
+    <a href="/dashboard/empresa" class="text-sm text-brand-600 hover:underline">← Mis retos</a>
+    <h1 class="mt-2 text-2xl font-bold">Crear reto tecnológico</h1>
+    <p class="mt-2 max-w-3xl text-slate-600">
+      Completa el requerimiento con campos de sustentabilidad obligatorios. El reto se guarda como
+      borrador hasta que lo publiques en el tablero.
+    </p>
+    <CompanyChallengeForm mode="create" />
+  </section>
+</BaseLayout>

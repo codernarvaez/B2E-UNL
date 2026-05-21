@@ -1,0 +1,101 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CompanyChallengeForm from "@/islands/CompanyChallengeForm.astro";
+import CompanyChallengeManage from "@/islands/CompanyChallengeManage.astro";
+import { isJwtExpired } from "@/lib/auth/jwt";
+import { fetchWithAuth } from "@/lib/api/client";
+import type { ChallengeMine } from "@/lib/api/challenges";
+import {
+  challengeStatusLabels,
+  publicationLabel,
+} from "@/lib/challenges/labels";
+import { readSessionFromCookies } from "@/lib/supabase/cookie-session";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard/empresa");
+}
+
+const session = readSessionFromCookies(Astro.cookies);
+
+if (!session?.access_token || isJwtExpired(session.access_token)) {
+  return Astro.redirect(`/auth/login?redirect=/dashboard/empresa/${id}`);
+}
+
+let challenge: ChallengeMine | null = null;
+let errorMessage: string | null = null;
+
+try {
+  challenge = await fetchWithAuth<ChallengeMine>(
+    `/api/v1/challenges/${id}`,
+    session.access_token,
+  );
+} catch (err) {
+  errorMessage = err instanceof Error ? err.message : "No se pudo cargar el reto";
+}
+
+const saved = Astro.url.searchParams.get("saved") === "1";
+const created = Astro.url.searchParams.get("created") === "1";
+---
+
+<BaseLayout title={challenge ? `${challenge.title} — Empresa` : "Gestionar reto — Empresa"}>
+  <section>
+    <a href="/dashboard/empresa" class="text-sm text-brand-600 hover:underline">← Mis retos</a>
+
+    {errorMessage && (
+      <p class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+        {errorMessage}
+      </p>
+    )}
+
+    {saved && (
+      <p class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+        Cambios guardados correctamente.
+      </p>
+    )}
+
+    {created && (
+      <p class="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+        Reto creado como borrador. Revisa el seguimiento y publícalo cuando esté listo.
+      </p>
+    )}
+
+    {
+      challenge && (
+        <>
+          <div class="mt-4 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold">{challenge.title}</h1>
+              <p class="mt-2 text-sm text-slate-500">
+                {challengeStatusLabels[challenge.status] ?? challenge.status}
+                {" · "}
+                {publicationLabel(challenge.published_at)}
+              </p>
+            </div>
+            {challenge.published_at && (
+              <a
+                href={`/retos/${challenge.id}`}
+                class="text-sm font-medium text-brand-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver en tablero público →
+              </a>
+            )}
+          </div>
+
+          <CompanyChallengeManage challengeId={challenge.id} />
+
+          <div class="mt-10 border-t border-slate-200 pt-8">
+            <h2 class="text-xl font-semibold">Editar requerimiento</h2>
+            <p class="mt-1 text-sm text-slate-500">
+              Actualiza descripción, métricas de impacto y categorías Green Tech.
+            </p>
+            <CompanyChallengeForm mode="edit" challengeId={challenge.id} />
+          </div>
+        </>
+      )
+    }
+  </section>
+</BaseLayout>

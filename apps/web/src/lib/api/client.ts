@@ -64,7 +64,16 @@ export async function fetchWithAuth<T>(
   }
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { detail?: string };
-    throw new Error(body.detail ?? "Error en la solicitud");
+    const detail = body.detail ?? "Error en la solicitud";
+    if (res.status === 401) {
+      throw new Error(
+        `${detail} Cierra sesión y vuelve a ingresar; si persiste, revisa SUPABASE_JWT_SECRET en .env (raíz del monorepo).`,
+      );
+    }
+    if (res.status === 503) {
+      throw new Error(`${detail} Revisa la configuración de la API en .env.`);
+    }
+    throw new Error(detail);
   }
   return res.json() as Promise<T>;
 }

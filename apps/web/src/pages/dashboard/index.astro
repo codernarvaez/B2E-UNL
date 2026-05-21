@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import AdminPanel from "@/islands/AdminPanel.astro";
+import { readSessionFromCookies } from "@/lib/supabase/cookie-session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   fetchAdminChallenges,
@@ -10,10 +11,8 @@ import {
 } from "@/lib/supabase/admin";
 import { fetchMyProfile } from "@/lib/supabase/profile";
 
+const session = readSessionFromCookies(Astro.cookies);
 const supabase = createSupabaseServerClient(Astro.cookies);
-const {
-  data: { session },
-} = await supabase.auth.getSession();
 
 if (!session) {
   return Astro.redirect("/auth/login");

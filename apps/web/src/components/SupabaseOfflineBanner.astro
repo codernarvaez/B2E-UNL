@@ -1,0 +1,28 @@
+---
+interface Props {
+  message?: string | null;
+}
+
+const { message } = Astro.props;
+const defaultMsg =
+  "No se pudo contactar Supabase por HTTPS. En redes institucionales el ping (ICMP) suele estar bloqueado; eso no implica que el servicio esté caído.";
+---
+
+<div
+  class="border-b border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-900"
+  role="alert"
+>
+  <p class="font-medium">Supabase no disponible desde esta red</p>
+  <p class="mt-1 text-red-800">{message ?? defaultMsg}</p>
+  <p class="mt-2 text-xs text-red-700">
+    Valida con HTTPS (no uses ping):
+    <code class="rounded bg-red-100 px-1">curl -I https://hzfkoxvqtemflpokaqnw.supabase.co</code>
+    · proyecto en el
+    <a
+      class="underline"
+      href="https://supabase.com/dashboard/project/hzfkoxvqtemflpokaqnw"
+      target="_blank"
+      rel="noopener noreferrer"
+    >dashboard</a>
+  </p>
+</div>

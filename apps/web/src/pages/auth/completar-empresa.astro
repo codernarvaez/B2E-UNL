@@ -2,13 +2,12 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import CompanyCompleteForm from "@/islands/CompanyCompleteForm.astro";
 import { needsCompanyProfileCompletion } from "@/lib/auth/company-profile";
+import { readSessionFromCookies } from "@/lib/supabase/cookie-session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchMyProfile } from "@/lib/supabase/profile";
 
+const session = readSessionFromCookies(Astro.cookies);
 const supabase = createSupabaseServerClient(Astro.cookies);
-const {
-  data: { session },
-} = await supabase.auth.getSession();
 
 if (!session) {
   return Astro.redirect("/auth/login?redirect=/auth/completar-empresa");
