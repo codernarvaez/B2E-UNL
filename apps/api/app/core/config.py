@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     supabase_url: str = "http://127.0.0.1:54321"
     supabase_jwt_secret: str = "super-secret-jwt-token-with-at-least-32-characters-long"
     supabase_anon_key: str = ""
-    api_host: str = "0.0.0.0"
+    api_host: str = "127.0.0.1"  # En Docker/producción: API_HOST=0.0.0.0 vía .env
     api_port: int = 8000
     cors_origins: str = "http://localhost:4321,http://127.0.0.1:4321"
 
