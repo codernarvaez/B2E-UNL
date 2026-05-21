@@ -64,17 +64,37 @@ for path in "${MUST_IGNORE[@]}"; do
   fi
 done
 
-# 3) .env.example SÍ debe poder añadirse
-if [[ -f ".env.example" ]]; then
-  if git check-ignore -q ".env.example" 2>/dev/null; then
-    echo "ERROR: .env.example está ignorado (debe subirse al repo)"
+# 3) Archivos que SÍ deben versionarse (plantilla y reglas del proyecto)
+for must_track in ".env.example" ".cursorrules"; do
+  if [[ -f "$must_track" ]]; then
+    if git check-ignore -q "$must_track" 2>/dev/null; then
+      echo "ERROR: $must_track está ignorado (debe subirse al repo público)"
+      FAIL=1
+    else
+      echo "OK [versionar]: $must_track no está ignorado"
+    fi
+  fi
+done
+
+# 4) supabase/ — migraciones y seed sí; secretos locales no
+if [[ -d "supabase/migrations" ]]; then
+  if git check-ignore -q "supabase/migrations" 2>/dev/null; then
+    echo "ERROR: supabase/migrations está ignorado (debe subirse al repo)"
     FAIL=1
   else
-    echo "OK: .env.example no está ignorado (correcto)"
+    echo "OK [versionar]: supabase/migrations"
+  fi
+fi
+if [[ -f "supabase/.env" ]]; then
+  if git check-ignore -q "supabase/.env" 2>/dev/null; then
+    echo "OK [ignorado]: supabase/.env"
+  else
+    echo "ERROR: supabase/.env no está ignorado"
+    FAIL=1
   fi
 fi
 
-# 4) Simular git add — no debe proponer basura
+# 5) Simular git add — no debe proponer basura
 STAGED_NEW=$(git add --dry-run . 2>/dev/null | wc -l)
 if [[ "$STAGED_NEW" -gt 0 ]]; then
   echo ""
@@ -83,7 +103,7 @@ if [[ "$STAGED_NEW" -gt 0 ]]; then
   echo "..."
 fi
 
-# 5) Historial: .env jamás commiteado
+# 6) Historial: .env jamás commiteado
 if git log --all --oneline -- .env 2>/dev/null | grep -q .; then
   echo "ERROR [historial]: .env fue commiteado antes. Debes rotar secretos y usar git filter-repo."
   FAIL=1

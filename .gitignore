@@ -12,16 +12,7 @@
 credentials.json
 service-account*.json
 secrets/
-.env.example
-.env.example*
-.cursorrules
-.cursorrules*
-.codegraph
-.codegraph*
-.codegraph/
-.codegraph/*
-.codegraph.*
-.codegraph.*/*
+
 # --- Node.js (cualquier ubicación en el monorepo) ---
 node_modules/
 **/node_modules/
@@ -69,12 +60,13 @@ out/
 .cache/
 .turbo/
 
-# --- Supabase CLI (local) ---
+# --- Supabase CLI (solo artefactos locales; migrations/ y config.toml SÍ van al repo) ---
 supabase/.branches/
 supabase/.temp/
 supabase/.env
 
-# --- IDE, agentes y herramientas locales (no subir a GitHub) ---
+# --- IDE y herramientas locales (no subir) ---
+# .cursorrules en la raíz SÍ se versiona (reglas del proyecto para el equipo)
 .idea/
 .vscode/
 .cursor
@@ -98,4 +90,3 @@ Thumbs.db
 # --- Logs ---
 *.log
 logs/
-

@@ -68,6 +68,19 @@ make install
 cp .env.example .env
 ```
 
+#### Qué es seguro subir al repositorio público
+
+| Ruta | ¿Subir? | Motivo |
+|------|---------|--------|
+| `.env.example` | **Sí** | Solo placeholders (`your-anon-key`, `[DB_PASSWORD]`). Sin secretos reales. Gitleaks lo excluye. |
+| `.env` | **No** | Contraseñas, JWT secret, service role. |
+| `.cursorrules` | **Sí** | Reglas del proyecto para Cursor; no contiene credenciales. |
+| `.cursor/` | **No** | Estado local del IDE (chats, índices). |
+| `.codegraph/` | **No** | Caché local de herramientas. |
+| `supabase/migrations/` | **Sí** | Esquema SQL y RLS; fuente de verdad del equipo. |
+| `supabase/seed.sql`, `config.toml` | **Sí** | Configuración y datos de ejemplo sin secretos. |
+| `supabase/.env` | **No** | Secretos del CLI local, si existiera. |
+
 Completa en `.env` (desde el [dashboard de Supabase](https://supabase.com/dashboard) → Settings → API):
 
 - `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`
@@ -237,9 +250,10 @@ Prueba explícita:
 
 ```bash
 git check-ignore -v .env .cursor .codegraph apps/web/node_modules apps/web/dist
+git check-ignore -v .env.example .cursorrules   # no debe devolver regla (no ignorados)
 ```
 
-Debe listar reglas de `.gitignore` para cada ruta.
+`.env.example` y `.cursorrules` **no** deben aparecer como ignorados. `.env` y `.cursor` **sí**.
 
 Si `.cursor` o `.codegraph` se subieron antes por error:
 
