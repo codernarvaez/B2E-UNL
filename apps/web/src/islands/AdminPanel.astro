@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { stats, profiles, challenges, proposals } = Astro.props;
-const adminJson = JSON.stringify({ stats, profiles, challenges, proposals });
+const adminJson = JSON.stringify({ stats, profiles, challenges, proposals }).replace(/</g, "\\u003c");
 ---
 
 <div id="admin-panel-root">
