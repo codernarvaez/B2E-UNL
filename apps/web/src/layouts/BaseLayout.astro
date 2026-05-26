@@ -34,14 +34,14 @@ const sessionBootstrapJson = sessionInfo ? JSON.stringify(sessionInfo) : "";
     <meta name="description" content={description} />
     <title>{title}</title>
   </head>
-  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+  <body class="min-h-screen bg-slate-50 text-slate-900 text-xl antialiased">
     {supabaseOffline && <SupabaseOfflineBanner message={supabaseError} />}
     {isAuthenticated && !supabaseOffline && <SessionExpiryBanner />}
     <SiteHeader
       isAuthenticated={isAuthenticated}
       userEmail={session?.user.email ?? null}
     />
-    <main class="mx-auto max-w-6xl px-4 py-8">
+    <main class="mx-auto max-w-[1660px] px-8 py-8">
       <slot />
     </main>
     <SiteFooter />
