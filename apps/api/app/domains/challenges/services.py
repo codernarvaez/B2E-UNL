@@ -83,28 +83,23 @@ def _anonymize_environmental_impact(
 def challenge_to_read(challenge: Challenge, *, anonymize: bool = False) -> dict:
     categories = [link.category for link in challenge.category_links if link.category is not None]
     company = challenge.company if challenge.company is not None else None
-    # determine privacy mode: prefer challenge.privacy_mode if present, else anonymize flag
     privacy_mode = getattr(challenge, "privacy_mode", None)
     if privacy_mode is None:
         privacy_mode = "pseudonymized" if anonymize else "original"
 
-    # compute public display name based on privacy_mode
     public_display_name = None
     if privacy_mode == "original" and company is not None:
         public_display_name = company.organization_name or company.full_name
     elif privacy_mode == "pseudonymized" and company is not None:
-        # simple pseudonym: Empresa - sector + short id
         short = (str(company.id)[:8]) if getattr(company, "id", None) else "org"
-        public_display_name = f"Empresa {company.organization_name or 'Anónima'} ({short})"
+        public_display_name = f"Empresa del sector {company.business_sector or 'General'} ({short})"
     elif privacy_mode == "anonymous":
         public_display_name = _public_company_alias(company) if company is not None else None
-    # Apply anonymization only when privacy_mode requires it
     if privacy_mode == "original":
         title = challenge.title
         description = challenge.description
         impact = challenge.environmental_impact
     else:
-        # pseudonymized and anonymous both sanitize text
         title = _anonymize_text(challenge.title, company)
         description = _anonymize_text(challenge.description, company)
         impact = _anonymize_environmental_impact(challenge.environmental_impact, company)
