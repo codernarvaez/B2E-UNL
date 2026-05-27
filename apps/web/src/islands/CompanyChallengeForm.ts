@@ -263,6 +263,7 @@ export function initCompanyChallengeForm(root: HTMLElement) {
       try {
         const challenge = await fetchChallenge(token, challengeId);
         fillForm(root, challenge);
+        refreshPreview(); 
       } catch (err) {
         showError(errorEl, err instanceof Error ? err.message : "No se pudo cargar el reto");
       }
