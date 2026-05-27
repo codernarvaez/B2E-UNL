@@ -70,4 +70,47 @@ export const CompanyRegisterSchema = z.object({
   path: ["password_confirm"],
 });
 
+export const ChallengeSchema = z.object({
+  title: z
+    .string()
+    .min(5, "El título debe tener al menos 5 caracteres")
+    .max(200, "Título muy largo (máx. 200 caracteres)")
+    .regex(SAFE_TEXT, "El título contiene caracteres no permitidos"),
+  description: z
+    .string()
+    .min(20, "La descripción debe tener al menos 20 caracteres")
+    .max(5000, "Descripción muy larga (máx. 5000 caracteres)"),
+  category_ids: z
+    .array(z.string().uuid())
+    .min(1, "Selecciona al menos una categoría"),
+  deadline: z
+    .string()
+    .nullable()
+    .refine((val) => {
+      if (!val) return true;
+      const date = new Date(val);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return date >= now;
+    }, "La fecha límite debe ser hoy o una fecha futura"),
+  environmental_impact: z.object({
+    summary: z
+      .string()
+      .min(10, "El resumen debe tener al menos 10 caracteres")
+      .max(1000, "Resumen muy largo (máx. 1000 caracteres)"),
+    expected_metric: z
+      .string()
+      .min(1, "Indica la métrica objetivo")
+      .max(100, "Métrica muy larga (máx. 100 caracteres)"),
+    metric_unit: z
+      .string()
+      .min(1, "Indica la unidad")
+      .max(50, "Unidad muy larga (máx. 50 caracteres)"),
+    baseline_situation: z.string().max(3000).nullable(),
+    success_criteria: z.string().max(3000).nullable(),
+    technical_scope: z.string().max(3000).nullable(),
+  }),
+});
+
 export type CompanyRegisterInput = z.infer<typeof CompanyRegisterSchema>;
+export type ChallengeInput = z.infer<typeof ChallengeSchema>;
