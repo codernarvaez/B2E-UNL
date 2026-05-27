@@ -9,11 +9,13 @@ export interface SustainabilityCategory {
 
 export interface ChallengePublic {
   id: string;
+  company_id?: string | null;
   public_display_name?: string | null;
   title: string;
   description: string;
   status: string;
   environmental_impact: Record<string, string>;
+  privacy_mode?: string;
   deadline: string | null;
   published_at: string | null;
   categories: SustainabilityCategory[];

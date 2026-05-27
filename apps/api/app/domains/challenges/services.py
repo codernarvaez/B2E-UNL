@@ -54,8 +54,8 @@ def _public_company_alias(company: Profile) -> str:
     return f"Entidad del Sector {sector} - Anónima"
 
 
-def _anonymize_text(text: str, company: Profile | None) -> str:
-    if company is None:
+def _anonymize_text(text: str | None, company: Profile | None) -> str | None:
+    if text is None or company is None:
         return text
 
     alias = _public_company_alias(company)
@@ -112,6 +112,7 @@ def challenge_to_read(challenge: Challenge, *, anonymize: bool = False) -> dict:
         "description": description,
         "status": challenge.status,
         "environmental_impact": impact,
+        "privacy_mode": privacy_mode,
         "deadline": challenge.deadline,
         "published_at": challenge.published_at,
         "created_at": challenge.created_at,

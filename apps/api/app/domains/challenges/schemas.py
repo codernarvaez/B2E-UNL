@@ -71,6 +71,7 @@ class ChallengeRead(BaseModel):
     description: str
     status: ChallengeStatus
     environmental_impact: dict[str, Any]
+    privacy_mode: str = "pseudonymized"
     deadline: date | None
     published_at: datetime | None
     created_at: datetime
@@ -82,11 +83,13 @@ class ChallengePublicRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    company_id: UUID | None = None
     public_display_name: str | None = None
     title: str
     description: str
     status: ChallengeStatus
     environmental_impact: dict[str, Any]
+    privacy_mode: str = "pseudonymized"
     deadline: date | None
     published_at: datetime | None
     categories: list[SustainabilityCategoryRead] = []
