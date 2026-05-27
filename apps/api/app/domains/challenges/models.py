@@ -38,6 +38,7 @@ class Challenge(Base):
     )
     title: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
+    privacy_mode: Mapped[str] = mapped_column(Text, nullable=False, default="pseudonymized")
     status: Mapped[ChallengeStatus] = mapped_column(
         Enum(ChallengeStatus, name="challenge_status", create_constraint=False, native_enum=True),
         nullable=False,
