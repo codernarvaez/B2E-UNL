@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     api_host: str = "127.0.0.1"  # En Docker/producción: API_HOST=0.0.0.0 vía .env
     api_port: int = 8000
     cors_origins: str = "http://localhost:4321,http://127.0.0.1:4321"
+    gemini_api_key: str = ""
 
     @property
     def cors_origin_list(self) -> list[str]:

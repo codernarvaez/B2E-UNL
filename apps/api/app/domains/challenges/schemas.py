@@ -95,3 +95,29 @@ class ChallengePublicRead(BaseModel):
     deadline: date | None
     published_at: datetime | None
     categories: list[SustainabilityCategoryRead] = []
+
+
+class RequirementSuggestion(BaseModel):
+    """AI suggestion to improve a challenge requirement."""
+    title: str | None = None
+    description: str | None = None
+    impact_summary: str | None = None
+    rationale: str = ""
+
+
+class RequirementImprovementRequest(BaseModel):
+    """Request for AI-based requirement improvement suggestions."""
+    title: str = Field(..., min_length=5, max_length=200)
+    description: str = Field(..., min_length=20)
+    impact_summary: str = Field(..., min_length=10)
+    expected_metric: str = Field(..., min_length=1)
+    metric_unit: str = Field(..., min_length=1)
+    baseline_situation: str | None = None
+    success_criteria: str | None = None
+    technical_scope: str | None = None
+
+
+class RequirementImprovementResponse(BaseModel):
+    """Response with AI suggestions for requirement improvement."""
+    suggestion: RequirementSuggestion | None = None
+    message: str = ""

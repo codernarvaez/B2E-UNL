@@ -1,0 +1,325 @@
+---
+// ChallengeRequirementImprover.astro - Component to suggest improvements using AI
+---
+
+<div
+  id="challenge-requirement-improver-root"
+  class="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4"
+>
+  <div class="flex items-start gap-3">
+    <svg class="h-5 w-5 flex-shrink-0 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+      <path
+        fill-rule="evenodd"
+        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <div class="flex-1">
+      <h3 class="font-semibold text-blue-900">Mejora tu requerimiento</h3>
+      <p class="mt-1 text-sm text-blue-800">
+        Usa IA para obtener sugerencias que harán tu reto más claro y atractivo para académicos.
+      </p>
+      <button
+        type="button"
+        id="improve-btn"
+        class="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+        <span id="improve-btn-text">Analizar requerimiento</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Suggestions Modal -->
+  <div
+    id="suggestions-modal"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-slate-900">Sugerencias de mejora</h2>
+        <button
+          type="button"
+          id="close-modal-btn"
+          class="text-slate-500 hover:text-slate-700"
+          aria-label="Cerrar"
+        >
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="suggestions-container" class="space-y-4">
+        <!-- Suggestions will be inserted here -->
+      </div>
+
+      <div class="mt-6 flex gap-3 border-t border-slate-200 pt-4">
+        <button
+          type="button"
+          id="reject-all-btn"
+          class="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Rechazar todas
+        </button>
+        <button
+          type="button"
+          id="accept-selected-btn"
+          class="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+        >
+          Aplicar seleccionadas
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
+  interface Suggestion {
+    title: string | null;
+    description: string | null;
+    impact_summary: string | null;
+    rationale: string;
+  }
+
+  interface SuggestionItem {
+    field: string;
+    current: string;
+    suggested: string;
+    reason: string;
+    accepted: boolean;
+  }
+
+  const improveBtn = document.getElementById("improve-btn") as HTMLButtonElement;
+  const improveBtnText = document.getElementById("improve-btn-text") as HTMLElement;
+  const suggestionsModal = document.getElementById("suggestions-modal") as HTMLElement;
+  const suggestionsContainer = document.getElementById("suggestions-container") as HTMLElement;
+  const closeModalBtn = document.getElementById("close-modal-btn") as HTMLButtonElement;
+  const rejectAllBtn = document.getElementById("reject-all-btn") as HTMLButtonElement;
+  const acceptSelectedBtn = document.getElementById("accept-selected-btn") as HTMLButtonElement;
+
+  let currentSuggestions: SuggestionItem[] = [];
+
+  async function getAccessToken(): Promise<string | null> {
+    const supabase = createSupabaseBrowserClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session?.access_token ?? null;
+  }
+
+  function readFormData(): {
+    title: string;
+    description: string;
+    impact_summary: string;
+    expected_metric: string;
+    metric_unit: string;
+    baseline_situation: string | null;
+    success_criteria: string | null;
+    technical_scope: string | null;
+  } | null {
+    const getField = (id: string) => {
+      const el = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${id}`);
+      return el?.value.trim() ?? "";
+    };
+
+    const title = getField("title");
+    const description = getField("description");
+    const impact_summary = getField("impact_summary");
+    const expected_metric = getField("expected_metric");
+    const metric_unit = getField("metric_unit");
+    const baseline_situation = getField("baseline_situation");
+    const success_criteria = getField("success_criteria");
+    const technical_scope = getField("technical_scope");
+
+    if (!title || !description || !impact_summary) {
+      alert("Por favor, completa al menos título, descripción y resumen de impacto.");
+      return null;
+    }
+
+    return {
+      title,
+      description,
+      impact_summary,
+      expected_metric,
+      metric_unit,
+      baseline_situation: baseline_situation || null,
+      success_criteria: success_criteria || null,
+      technical_scope: technical_scope || null,
+    };
+  }
+
+  async function requestSuggestions() {
+    const formData = readFormData();
+    if (!formData) return;
+
+    improveBtn.disabled = true;
+    improveBtnText.textContent = "Analizando...";
+
+    try {
+      const token = await getAccessToken();
+      if (!token) {
+        alert("Sesión expirada. Por favor, recarga la página.");
+        return;
+      }
+
+      const response = await fetch("/api/v1/challenges/improve-requirement", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener sugerencias");
+      }
+
+      const data = await response.json();
+
+      if (!data.suggestion) {
+        alert(data.message || "No se pudieron generar sugerencias.");
+        return;
+      }
+
+      // Build suggestions array with differences
+      currentSuggestions = [];
+
+      if (data.suggestion.title && data.suggestion.title !== formData.title) {
+        currentSuggestions.push({
+          field: "title",
+          current: formData.title,
+          suggested: data.suggestion.title,
+          reason: "Título más claro y conciso",
+          accepted: false,
+        });
+      }
+
+      if (data.suggestion.description && data.suggestion.description !== formData.description) {
+        currentSuggestions.push({
+          field: "description",
+          current: formData.description,
+          suggested: data.suggestion.description,
+          reason: "Descripción más estructurada y precisa",
+          accepted: false,
+        });
+      }
+
+      if (data.suggestion.impact_summary && data.suggestion.impact_summary !== formData.impact_summary) {
+        currentSuggestions.push({
+          field: "impact_summary",
+          current: formData.impact_summary,
+          suggested: data.suggestion.impact_summary,
+          reason: "Impacto esperado más medible",
+          accepted: false,
+        });
+      }
+
+      if (currentSuggestions.length === 0) {
+        alert("Tu requerimiento está bien estructurado. " + (data.suggestion.rationale || ""));
+        return;
+      }
+
+      renderSuggestions();
+      suggestionsModal.classList.remove("hidden");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al conectar con el servicio de IA. Verifica que esté configurado.");
+    } finally {
+      improveBtn.disabled = false;
+      improveBtnText.textContent = "Analizar requerimiento";
+    }
+  }
+
+  function renderSuggestions() {
+    suggestionsContainer.innerHTML = currentSuggestions
+      .map(
+        (sugg, idx) => `
+      <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="mb-2 flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="suggestion-${idx}"
+                class="suggestion-checkbox"
+                data-idx="${idx}"
+              />
+              <label for="suggestion-${idx}" class="font-medium text-slate-900">
+                ${sugg.field === "title" ? "Título" : sugg.field === "description" ? "Descripción" : "Resumen de Impacto"}
+              </label>
+              <span class="text-xs text-slate-500">${sugg.reason}</span>
+            </div>
+
+            <div class="space-y-2">
+              <div class="grid gap-2 sm:grid-cols-2">
+                <div class="rounded bg-slate-100 p-2">
+                  <p class="text-xs font-semibold text-slate-600 uppercase">Actual</p>
+                  <p class="mt-1 text-sm text-slate-700 line-clamp-3">${escapeHtml(sugg.current)}</p>
+                </div>
+                <div class="rounded bg-green-50 p-2">
+                  <p class="text-xs font-semibold text-green-700 uppercase">Sugerido</p>
+                  <p class="mt-1 text-sm text-green-900 line-clamp-3">${escapeHtml(sugg.suggested)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+      )
+      .join("");
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll<HTMLInputElement>(".suggestion-checkbox").forEach((checkbox) => {
+      checkbox.addEventListener("change", (e) => {
+        const idx = parseInt((e.target as HTMLInputElement).dataset.idx || "0");
+        currentSuggestions[idx].accepted = (e.target as HTMLInputElement).checked;
+      });
+    });
+  }
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function applySelected() {
+    const acceptedSuggestions = currentSuggestions.filter((s) => s.accepted);
+
+    if (acceptedSuggestions.length === 0) {
+      alert("Selecciona al menos una sugerencia para aplicar.");
+      return;
+    }
+
+    acceptedSuggestions.forEach((sugg) => {
+      const fieldId =
+        sugg.field === "impact_summary" ? "impact_summary" : sugg.field;
+      const el = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${fieldId}`);
+      if (el) {
+        el.value = sugg.suggested;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+
+    suggestionsModal.classList.add("hidden");
+    alert(`✓ Se aplicaron ${acceptedSuggestions.length} mejora(s) al requerimiento.`);
+  }
+
+  improveBtn.addEventListener("click", requestSuggestions);
+  closeModalBtn.addEventListener("click", () => suggestionsModal.classList.add("hidden"));
+  rejectAllBtn.addEventListener("click", () => suggestionsModal.classList.add("hidden"));
+  acceptSelectedBtn.addEventListener("click", applySelected);
+</script>

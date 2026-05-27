@@ -10,6 +10,8 @@ from app.domains.challenges.schemas import (
     ChallengeRead,
     ChallengeStatusUpdate,
     ChallengeUpdate,
+    RequirementImprovementRequest,
+    RequirementImprovementResponse,
     SustainabilityCategoryRead,
 )
 
@@ -94,3 +96,43 @@ def update_status(
 ) -> ChallengeRead:
     challenge = services.transition_status(db, profile, challenge_id, body)
     return ChallengeRead.model_validate(services.challenge_to_read(challenge))
+
+
+@router.post("/improve-requirement", response_model=RequirementImprovementResponse)
+def improve_requirement(
+    body: RequirementImprovementRequest,
+    profile: CurrentProfile,
+) -> RequirementImprovementResponse:
+    """Get AI-powered suggestions to improve a challenge requirement."""
+    from app.domains.challenges.ai_service import suggest_requirement_improvement
+    from app.domains.challenges.schemas import EnvironmentalImpact
+
+    # Build EnvironmentalImpact object correctly
+    env_impact = EnvironmentalImpact(
+        summary=body.impact_summary,
+        expected_metric=body.expected_metric,
+        metric_unit=body.metric_unit,
+        baseline_situation=body.baseline_situation,
+        success_criteria=body.success_criteria,
+        technical_scope=body.technical_scope,
+    )
+
+    # Create a minimal challenge object for AI analysis
+    challenge_data = {
+        "title": body.title,
+        "description": body.description,
+        "environmental_impact": env_impact,
+    }
+
+    suggestion = suggest_requirement_improvement(challenge_data)
+
+    if suggestion:
+        return RequirementImprovementResponse(
+            suggestion=suggestion,
+            message="Se encontraron mejoras sugeridas basadas en análisis de requerimientos.",
+        )
+    else:
+        return RequirementImprovementResponse(
+            suggestion=None,
+            message="No fue posible generar sugerencias en este momento. Verifica que GEMINI_API_KEY esté configurado.",
+        )

@@ -5,6 +5,8 @@ interface Props {
 }
 
 const { mode = "create", challengeId } = Astro.props;
+
+import ChallengeRequirementImprover from "@/islands/ChallengeRequirementImprover.astro";
 ---
 
 <div
@@ -161,8 +163,83 @@ const { mode = "create", challengeId } = Astro.props;
       </div>
     </fieldset>
 
+    <ChallengeRequirementImprover />
+
+    <fieldset class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-6">
+      <legend class="text-lg font-semibold text-emerald-900">3. Impacto ambiental y métricas</legend>
+      <p class="mt-1 text-sm text-emerald-800">
+        Campos obligatorios de sustentabilidad para la plataforma B2E.
+      </p>
+
+      <div class="mt-4">
+        <label for="impact_summary" class="block text-sm font-medium text-slate-700">
+          Resumen del impacto esperado *
+        </label>
+        <textarea
+          id="impact_summary"
+          name="impact_summary"
+          required
+          minlength="10"
+          rows="3"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+        ></textarea>
+      </div>
+
+      <div class="mt-4">
+        <label for="baseline_situation" class="block text-sm font-medium text-slate-700">
+          Línea base / situación actual
+        </label>
+        <textarea
+          id="baseline_situation"
+          name="baseline_situation"
+          rows="2"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Consumo actual, residuos, emisiones u otro indicador de partida…"
+        ></textarea>
+      </div>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="expected_metric" class="block text-sm font-medium text-slate-700">
+            Métrica objetivo *
+          </label>
+          <input
+            id="expected_metric"
+            name="expected_metric"
+            type="text"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. Reducción de consumo eléctrico"
+          />
+        </div>
+        <div>
+          <label for="metric_unit" class="block text-sm font-medium text-slate-700">Unidad *</label>
+          <input
+            id="metric_unit"
+            name="metric_unit"
+            type="text"
+            required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="Ej. % anual, t CO₂e, kWh"
+          />
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label for="success_criteria" class="block text-sm font-medium text-slate-700">
+          Criterios de éxito medibles
+        </label>
+        <textarea
+          id="success_criteria"
+          name="success_criteria"
+          rows="2"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+          placeholder="Umbrales, plazos de medición, validación con datos de planta…"
+        ></textarea>
+      </div>
+    </fieldset>
+
     <section class="rounded-xl border border-slate-200 bg-slate-50 p-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-lg font-semibold text-slate-900">Tratamiento de privacidad</h2>
           <p class="mt-1 text-sm text-slate-500">
