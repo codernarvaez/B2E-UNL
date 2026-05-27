@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -10,6 +11,7 @@ class EnvironmentalImpact(BaseModel):
     summary: str = Field(..., min_length=10)
     expected_metric: str = Field(..., min_length=1)
     metric_unit: str = Field(..., min_length=1)
+    privacy_mode: Literal["original", "pseudonymized", "anonymous"] = "pseudonymized"
     baseline_situation: str | None = Field(
         None,
         min_length=10,
@@ -64,10 +66,11 @@ class ChallengeRead(BaseModel):
 
     id: UUID
     company_id: UUID
+    public_display_name: str | None = None
     title: str
     description: str
     status: ChallengeStatus
-    environmental_impact: dict[str, str]
+    environmental_impact: dict[str, Any]
     deadline: date | None
     published_at: datetime | None
     created_at: datetime
@@ -79,10 +82,11 @@ class ChallengePublicRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    public_display_name: str | None = None
     title: str
     description: str
     status: ChallengeStatus
-    environmental_impact: dict[str, str]
+    environmental_impact: dict[str, Any]
     deadline: date | None
     published_at: datetime | None
     categories: list[SustainabilityCategoryRead] = []

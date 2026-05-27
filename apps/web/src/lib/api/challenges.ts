@@ -40,6 +40,7 @@ export interface ChallengeCreateBody {
   environmental_impact: EnvironmentalImpactInput;
   category_ids: string[];
   deadline?: string | null;
+  privacy_mode?: "original" | "pseudonymized" | "anonymous";
 }
 
 export async function fetchCategories(): Promise<SustainabilityCategory[]> {

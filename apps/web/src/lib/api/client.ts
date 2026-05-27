@@ -9,6 +9,7 @@ export interface SustainabilityCategory {
 
 export interface ChallengePublic {
   id: string;
+  public_display_name?: string | null;
   title: string;
   description: string;
   status: string;

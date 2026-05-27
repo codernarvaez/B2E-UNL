@@ -46,6 +46,16 @@ def _decode_jwt_local(token: str) -> TokenPayload:
     return _payload_from_claims(payload)
 
 
+def _decode_jwt_with_fallback(token: str) -> TokenPayload:
+    try:
+        return _decode_jwt_local(token)
+    except HTTPException as exc:
+        if exc.status_code != status.HTTP_401_UNAUTHORIZED:
+            raise
+
+    return _verify_jwt_via_supabase_auth(token)
+
+
 def _payload_from_claims(payload: dict) -> TokenPayload:
     sub = payload.get("sub")
     if not sub:
@@ -129,5 +139,5 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
 
 def decode_supabase_jwt(token: str) -> TokenPayload:
     if is_jwt_secret_configured():
-        return _decode_jwt_local(token)
+        return _decode_jwt_with_fallback(token)
     return _verify_jwt_via_supabase_auth(token)

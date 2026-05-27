@@ -33,11 +33,16 @@ const impact = challenge.environmental_impact;
     )
   }
   <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
-    <span>
-      {challenge.deadline
-        ? `Plazo: ${new Date(challenge.deadline).toLocaleDateString("es-EC")}`
-        : "Sin plazo definido"}
-    </span>
+    <div class="flex items-center gap-4">
+      <span>
+        {challenge.deadline
+          ? `Plazo: ${new Date(challenge.deadline).toLocaleDateString("es-EC")}`
+          : "Sin plazo definido"}
+      </span>
+      {challenge.public_display_name && (
+        <span class="text-xs text-slate-500">Publica: {challenge.public_display_name}</span>
+      )}
+    </div>
     <a href={`/retos/${challenge.id}`} class="font-medium text-brand-600 hover:underline">
       Ver detalle →
     </a>

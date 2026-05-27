@@ -42,6 +42,7 @@ CREATE TABLE public.challenges (
   description TEXT NOT NULL,
   status public.challenge_status NOT NULL DEFAULT 'open',
   environmental_impact JSONB NOT NULL DEFAULT '{}'::jsonb,
+  privacy_mode TEXT NOT NULL DEFAULT 'pseudonymized',
   deadline DATE,
   published_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

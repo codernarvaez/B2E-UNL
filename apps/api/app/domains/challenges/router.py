@@ -25,7 +25,7 @@ def get_categories(db: DbSession) -> list[SustainabilityCategoryRead]:
 @router.get("/public", response_model=list[ChallengePublicRead])
 def list_public(db: DbSession) -> list[ChallengePublicRead]:
     challenges = services.list_public_challenges(db)
-    return [ChallengePublicRead.model_validate(services.challenge_to_read(c)) for c in challenges]
+    return [ChallengePublicRead.model_validate(services.challenge_to_read(c, anonymize=True)) for c in challenges]
 
 
 @router.get("/public/{challenge_id}", response_model=ChallengePublicRead)
@@ -35,7 +35,7 @@ def get_public(challenge_id: UUID, db: DbSession) -> ChallengePublicRead:
         from fastapi import HTTPException, status
 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reto no disponible")
-    return ChallengePublicRead.model_validate(services.challenge_to_read(challenge))
+    return ChallengePublicRead.model_validate(services.challenge_to_read(challenge, anonymize=True))
 
 
 @router.get("/mine", response_model=list[ChallengeRead])

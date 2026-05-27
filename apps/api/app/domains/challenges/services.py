@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+import re
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -48,15 +49,74 @@ def _set_categories(db: Session, challenge: Challenge, category_ids: list[UUID])
         challenge.category_links.append(ChallengeCategory(category_id=cat.id))
 
 
-def challenge_to_read(challenge: Challenge) -> dict:
+def _public_company_alias(company: Profile) -> str:
+    sector = (company.business_sector or "general").strip() or "general"
+    return f"Entidad del Sector {sector} - Anónima"
+
+
+def _anonymize_text(text: str, company: Profile | None) -> str:
+    if company is None:
+        return text
+
+    alias = _public_company_alias(company)
+    candidates = [company.organization_name, company.full_name]
+    sanitized = text
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+        sanitized = re.sub(re.escape(candidate), alias, sanitized, flags=re.IGNORECASE)
+
+    return sanitized
+
+
+def _anonymize_environmental_impact(
+    impact: dict[str, str],
+    company: Profile | None,
+) -> dict[str, str]:
+    return {
+        key: _anonymize_text(value, company)
+        for key, value in impact.items()
+    }
+
+
+def challenge_to_read(challenge: Challenge, *, anonymize: bool = False) -> dict:
     categories = [link.category for link in challenge.category_links if link.category is not None]
+    company = challenge.company if challenge.company is not None else None
+    # determine privacy mode: prefer challenge.privacy_mode if present, else anonymize flag
+    privacy_mode = getattr(challenge, "privacy_mode", None)
+    if privacy_mode is None:
+        privacy_mode = "pseudonymized" if anonymize else "original"
+
+    # compute public display name based on privacy_mode
+    public_display_name = None
+    if privacy_mode == "original" and company is not None:
+        public_display_name = company.organization_name or company.full_name
+    elif privacy_mode == "pseudonymized" and company is not None:
+        # simple pseudonym: Empresa - sector + short id
+        short = (str(company.id)[:8]) if getattr(company, "id", None) else "org"
+        public_display_name = f"Empresa {company.organization_name or 'Anónima'} ({short})"
+    elif privacy_mode == "anonymous":
+        public_display_name = _public_company_alias(company) if company is not None else None
+    # Apply anonymization only when privacy_mode requires it
+    if privacy_mode == "original":
+        title = challenge.title
+        description = challenge.description
+        impact = challenge.environmental_impact
+    else:
+        # pseudonymized and anonymous both sanitize text
+        title = _anonymize_text(challenge.title, company)
+        description = _anonymize_text(challenge.description, company)
+        impact = _anonymize_environmental_impact(challenge.environmental_impact, company)
+
     data = {
         "id": challenge.id,
         "company_id": challenge.company_id,
-        "title": challenge.title,
-        "description": challenge.description,
+        "public_display_name": public_display_name,
+        "title": title,
+        "description": description,
         "status": challenge.status,
-        "environmental_impact": challenge.environmental_impact,
+        "environmental_impact": impact,
         "deadline": challenge.deadline,
         "published_at": challenge.published_at,
         "created_at": challenge.created_at,
@@ -76,6 +136,7 @@ def list_public_challenges(db: Session) -> list[Challenge]:
             )
             .options(
                 selectinload(Challenge.category_links).selectinload(ChallengeCategory.category)
+                , selectinload(Challenge.company)
             )
             .order_by(Challenge.published_at.desc())
         ).all()
@@ -109,6 +170,7 @@ def create_challenge(db: Session, profile: Profile, data: ChallengeCreate) -> Ch
         title=data.title,
         description=data.description,
         environmental_impact=data.environmental_impact.model_dump(),
+        privacy_mode=getattr(data, "privacy_mode", "pseudonymized") if hasattr(data, "privacy_mode") else "pseudonymized",
         deadline=data.deadline,
         status=ChallengeStatus.open,
     )
@@ -134,6 +196,8 @@ def update_challenge(
         challenge.title = data.title
     if data.description is not None:
         challenge.description = data.description
+    if getattr(data, "privacy_mode", None) is not None:
+        challenge.privacy_mode = data.privacy_mode
     if data.environmental_impact is not None:
         challenge.environmental_impact = data.environmental_impact.model_dump()
     if data.deadline is not None:
