@@ -152,6 +152,7 @@ function fillForm(root: HTMLElement, challenge: Awaited<ReturnType<typeof fetchC
     const el = root.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${id}`);
     if (el) el.value = value;
   };
+  const privacyMode = root.querySelector<HTMLSelectElement>("#privacy_mode");
 
   set("title", challenge.title);
   set("description", challenge.description);
@@ -161,6 +162,7 @@ function fillForm(root: HTMLElement, challenge: Awaited<ReturnType<typeof fetchC
   set("baseline_situation", challenge.environmental_impact.baseline_situation ?? "");
   set("success_criteria", challenge.environmental_impact.success_criteria ?? "");
   set("technical_scope", challenge.environmental_impact.technical_scope ?? "");
+  if (privacyMode) privacyMode.value = challenge.privacy_mode ?? "pseudonymized";
   if (challenge.deadline) set("deadline", challenge.deadline.slice(0, 10));
 
   const selected = new Set(challenge.categories.map((c) => c.id));

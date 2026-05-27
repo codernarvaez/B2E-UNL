@@ -46,6 +46,7 @@ class ChallengeCreate(BaseModel):
     description: str = Field(..., min_length=20)
     environmental_impact: EnvironmentalImpact
     category_ids: list[UUID] = Field(..., min_length=1)
+    privacy_mode: Literal["original", "pseudonymized", "anonymous"] = "pseudonymized"
     deadline: date | None = None
 
 
@@ -54,6 +55,7 @@ class ChallengeUpdate(BaseModel):
     description: str | None = Field(None, min_length=20)
     environmental_impact: EnvironmentalImpact | None = None
     category_ids: list[UUID] | None = None
+    privacy_mode: Literal["original", "pseudonymized", "anonymous"] | None = None
     deadline: date | None = None
 
 

@@ -166,7 +166,7 @@ def create_challenge(db: Session, profile: Profile, data: ChallengeCreate) -> Ch
         title=data.title,
         description=data.description,
         environmental_impact=data.environmental_impact.model_dump(),
-        privacy_mode=getattr(data, "privacy_mode", "pseudonymized") if hasattr(data, "privacy_mode") else "pseudonymized",
+        privacy_mode=data.privacy_mode,
         deadline=data.deadline,
         status=ChallengeStatus.open,
     )
@@ -192,7 +192,7 @@ def update_challenge(
         challenge.title = data.title
     if data.description is not None:
         challenge.description = data.description
-    if getattr(data, "privacy_mode", None) is not None:
+    if data.privacy_mode is not None:
         challenge.privacy_mode = data.privacy_mode
     if data.environmental_impact is not None:
         challenge.environmental_impact = data.environmental_impact.model_dump()
