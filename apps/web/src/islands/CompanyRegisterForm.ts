@@ -100,7 +100,7 @@ export function initCompanyRegisterForm(root: HTMLElement) {
 // mensajes de errores Zod 
 function extractErrorMessage(err: unknown): string {
   if (err instanceof ZodError) {
-    const errors = err.errors;
+    const errors = err.issues;
     if (errors.length > 0) {
       const firstError = errors[0];
       const message = firstError.message;
