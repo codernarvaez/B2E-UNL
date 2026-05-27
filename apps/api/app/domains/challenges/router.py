@@ -110,8 +110,8 @@ def improve_requirement(
     # Build EnvironmentalImpact object correctly
     env_impact = EnvironmentalImpact(
         summary=body.impact_summary,
-        expected_metric=body.expected_metric,
-        metric_unit=body.metric_unit,
+        expected_metric=body.expected_metric or "No especificada",
+        metric_unit=body.metric_unit or "No especificada",
         baseline_situation=body.baseline_situation,
         success_criteria=body.success_criteria,
         technical_scope=body.technical_scope,

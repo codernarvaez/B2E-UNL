@@ -28,7 +28,7 @@ def suggest_requirement_improvement(challenge_data: dict[str, Any]) -> dict[str,
 
     try:
         genai.configure(api_key=settings.gemini_api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemma-4-26b-a4b-it")
         
         # Extract environmental impact data
         env_impact = challenge_data.get("environmental_impact", {})

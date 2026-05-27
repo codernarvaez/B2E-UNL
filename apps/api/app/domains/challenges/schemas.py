@@ -110,8 +110,8 @@ class RequirementImprovementRequest(BaseModel):
     title: str = Field(..., min_length=5, max_length=200)
     description: str = Field(..., min_length=20)
     impact_summary: str = Field(..., min_length=10)
-    expected_metric: str = Field(..., min_length=1)
-    metric_unit: str = Field(..., min_length=1)
+    expected_metric: str | None = None
+    metric_unit: str | None = None
     baseline_situation: str | None = None
     success_criteria: str | None = None
     technical_scope: str | None = None

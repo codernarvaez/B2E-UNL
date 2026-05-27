@@ -82,6 +82,7 @@
 </div>
 
 <script>
+  import { fetchWithAuth } from "@/lib/api/client";
   import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
   interface Suggestion {
@@ -172,20 +173,14 @@
         return;
       }
 
-      const response = await fetch("/api/v1/challenges/improve-requirement", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const data = await fetchWithAuth<{ suggestion: Suggestion | null; message: string }>(
+        "/api/v1/challenges/improve-requirement",
+        token,
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al obtener sugerencias");
-      }
-
-      const data = await response.json();
+      );
 
       if (!data.suggestion) {
         alert(data.message || "No se pudieron generar sugerencias.");
