@@ -37,14 +37,38 @@
     </div>
   </div>
 
+  <div
+    id="loading-modal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/55 px-4 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="loading-modal-title"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white p-6 text-center shadow-2xl">
+      <div
+        class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border-4 border-slate-200 border-t-slate-700 animate-spin"
+        aria-hidden="true"
+      ></div>
+      <h3 id="loading-modal-title" class="mt-5 text-lg font-semibold text-slate-900">
+        Generando sugerencias.
+      </h3>
+      <p class="mt-2 whitespace-pre-line text-sm text-slate-600">
+        Esto puede tomar unos segundos
+      </p>
+    </div>
+  </div>
+
   <!-- Suggestions Modal -->
   <div
     id="suggestions-modal"
-    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/55 px-4 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="suggestions-modal-title"
   >
-    <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+    <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-bold text-slate-900">Sugerencias de mejora</h2>
+        <h2 id="suggestions-modal-title" class="text-xl font-bold text-slate-900">Sugerencias de mejora</h2>
         <button
           type="button"
           id="close-modal-btn"
@@ -102,6 +126,7 @@
 
   const improveBtn = document.getElementById("improve-btn") as HTMLButtonElement;
   const improveBtnText = document.getElementById("improve-btn-text") as HTMLElement;
+  const loadingModal = document.getElementById("loading-modal") as HTMLElement;
   const suggestionsModal = document.getElementById("suggestions-modal") as HTMLElement;
   const suggestionsContainer = document.getElementById("suggestions-container") as HTMLElement;
   const closeModalBtn = document.getElementById("close-modal-btn") as HTMLButtonElement;
@@ -109,6 +134,35 @@
   const acceptSelectedBtn = document.getElementById("accept-selected-btn") as HTMLButtonElement;
 
   let currentSuggestions: SuggestionItem[] = [];
+
+  function syncBodyScrollLock() {
+    const shouldLock = !loadingModal.classList.contains("hidden") || !suggestionsModal.classList.contains("hidden");
+    document.body.classList.toggle("overflow-hidden", shouldLock);
+  }
+
+  function showLoading() {
+    loadingModal.classList.remove("hidden");
+    loadingModal.classList.add("flex");
+    syncBodyScrollLock();
+  }
+
+  function hideLoading() {
+    loadingModal.classList.add("hidden");
+    loadingModal.classList.remove("flex");
+    syncBodyScrollLock();
+  }
+
+  function openSuggestionsModal() {
+    suggestionsModal.classList.remove("hidden");
+    suggestionsModal.classList.add("flex");
+    syncBodyScrollLock();
+  }
+
+  function closeSuggestionsModal() {
+    suggestionsModal.classList.add("hidden");
+    suggestionsModal.classList.remove("flex");
+    syncBodyScrollLock();
+  }
 
   async function getAccessToken(): Promise<string | null> {
     const supabase = createSupabaseBrowserClient();
@@ -165,6 +219,7 @@
 
     improveBtn.disabled = true;
     improveBtnText.textContent = "Analizando...";
+    showLoading();
 
     try {
       const token = await getAccessToken();
@@ -225,12 +280,14 @@
         return;
       }
 
+      hideLoading();
       renderSuggestions();
-      suggestionsModal.classList.remove("hidden");
+      openSuggestionsModal();
     } catch (error) {
       console.error("Error:", error);
       alert("Error al conectar con el servicio de IA. Verifica que esté configurado.");
     } finally {
+      hideLoading();
       improveBtn.disabled = false;
       improveBtnText.textContent = "Analizar requerimiento";
     }
@@ -309,12 +366,12 @@
       }
     });
 
-    suggestionsModal.classList.add("hidden");
+    closeSuggestionsModal();
     alert(`✓ Se aplicaron ${acceptedSuggestions.length} mejora(s) al requerimiento.`);
   }
 
   improveBtn.addEventListener("click", requestSuggestions);
-  closeModalBtn.addEventListener("click", () => suggestionsModal.classList.add("hidden"));
-  rejectAllBtn.addEventListener("click", () => suggestionsModal.classList.add("hidden"));
+  closeModalBtn.addEventListener("click", closeSuggestionsModal);
+  rejectAllBtn.addEventListener("click", closeSuggestionsModal);
   acceptSelectedBtn.addEventListener("click", applySelected);
 </script>
