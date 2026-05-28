@@ -23,7 +23,10 @@ if (supabaseOffline && supabaseError) {
 
 const isAuthenticated = Boolean(session);
 const sessionInfo = session ? getServerSessionInfo(session) : null;
-const sessionBootstrapJson = sessionInfo ? JSON.stringify(sessionInfo) : "";
+const sessionBootstrapJson = sessionInfo ? JSON.stringify(sessionInfo)
+  .replace(/</g, "\\u003c")
+  .replace(/>/g, "\\u003e")
+  .replace(/&/g, "\\u0026") : "";
 ---
 
 <!doctype html>
