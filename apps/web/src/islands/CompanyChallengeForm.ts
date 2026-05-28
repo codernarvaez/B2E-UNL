@@ -6,6 +6,7 @@ import {
   type ChallengeCreateBody,
 } from "@/lib/api/challenges";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { ChallengeSchema } from "@/lib/validation/schemas";
 
 function showError(el: HTMLElement | null, msg: string) {
   if (!el) return;

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domains.challenges.models import ChallengeStatus
 
@@ -46,6 +46,13 @@ class ChallengeCreate(BaseModel):
     category_ids: list[UUID] = Field(..., min_length=1)
     deadline: date | None = None
 
+    @field_validator("deadline")
+    @classmethod
+    def deadline_must_be_future(cls, v: date | None) -> date | None:
+        if v and v < date.today():
+            raise ValueError("La fecha límite debe ser hoy o una fecha futura")
+        return v
+
 
 class ChallengeUpdate(BaseModel):
     title: str | None = Field(None, min_length=5, max_length=200)
@@ -53,6 +60,13 @@ class ChallengeUpdate(BaseModel):
     environmental_impact: EnvironmentalImpact | None = None
     category_ids: list[UUID] | None = None
     deadline: date | None = None
+
+    @field_validator("deadline")
+    @classmethod
+    def deadline_must_be_future(cls, v: date | None) -> date | None:
+        if v and v < date.today():
+            raise ValueError("La fecha límite debe ser hoy o una fecha futura")
+        return v
 
 
 class ChallengeStatusUpdate(BaseModel):
