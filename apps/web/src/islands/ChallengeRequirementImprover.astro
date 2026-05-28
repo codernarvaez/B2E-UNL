@@ -122,6 +122,7 @@
     suggested: string;
     reason: string;
     accepted: boolean;
+    expanded: boolean;
   }
 
   const improveBtn = document.getElementById("improve-btn") as HTMLButtonElement;
@@ -252,6 +253,7 @@
           suggested: data.suggestion.title,
           reason: "Título más claro y conciso",
           accepted: false,
+          expanded: false,
         });
       }
 
@@ -262,6 +264,7 @@
           suggested: data.suggestion.description,
           reason: "Descripción más estructurada y precisa",
           accepted: false,
+          expanded: false,
         });
       }
 
@@ -272,6 +275,7 @@
           suggested: data.suggestion.impact_summary,
           reason: "Impacto esperado más medible",
           accepted: false,
+          expanded: false,
         });
       }
 
@@ -311,17 +315,30 @@
                 ${sugg.field === "title" ? "Título" : sugg.field === "description" ? "Descripción" : "Resumen de Impacto"}
               </label>
               <span class="text-xs text-slate-500">${sugg.reason}</span>
+              <button
+                type="button"
+                class="toggle-expand-btn ml-auto text-slate-500 hover:text-slate-700"
+                data-idx="${idx}"
+                aria-label="${sugg.expanded ? "Contract" : "Expand"}"
+              >
+                <svg class="h-4 w-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  ${sugg.expanded ? 
+                    `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7 7 7" />` :
+                    `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7" />`
+                  }
+                </svg>
+              </button>   
             </div>
 
             <div class="space-y-2">
               <div class="grid gap-2 sm:grid-cols-2">
                 <div class="rounded bg-slate-100 p-2">
                   <p class="text-xs font-semibold text-slate-600 uppercase">Actual</p>
-                  <p class="mt-1 text-sm text-slate-700 line-clamp-3">${escapeHtml(sugg.current)}</p>
+                  <p class="mt-1 text-sm text-slate-700 ${sugg.expanded ? "" : "line-clamp-3"}">${escapeHtml(sugg.current)}</p>
                 </div>
                 <div class="rounded bg-green-50 p-2">
                   <p class="text-xs font-semibold text-green-700 uppercase">Sugerido</p>
-                  <p class="mt-1 text-sm text-green-900 line-clamp-3">${escapeHtml(sugg.suggested)}</p>
+                  <p class="mt-1 text-sm text-green-900 ${sugg.expanded ? "" : "line-clamp-3"}">${escapeHtml(sugg.suggested)}</p>
                 </div>
               </div>
             </div>
@@ -339,12 +356,26 @@
         currentSuggestions[idx].accepted = (e.target as HTMLInputElement).checked;
       });
     });
+
+    // Add event listeners to toggle button
+    document.querySelectorAll<HTMLButtonElement>(".toggle-expand-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const idx = parseInt((e.currentTarget as HTMLButtonElement).dataset.idx || "0");
+        toggleExpanded(idx);
+      });
+    });
   }
 
   function escapeHtml(text: string): string {
     const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  function toggleExpanded(idx: number): void {
+    currentSuggestions[idx].expanded = !currentSuggestions[idx].expanded;
+    renderSuggestions();
   }
 
   function applySelected() {
