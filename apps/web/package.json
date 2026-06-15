@@ -17,13 +17,13 @@
     "@supabase/supabase-js": "^2.47.10",
     "astro": "^6.3.8",
     "b2e-monorepo": "file:../..",
-    "dompurify": "^3.4.5",
+    "dompurify": "^3.4.10",
     "tailwindcss": "^3.4.17",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@types/dompurify": "^3.0.5",
+    "@types/dompurify": "^3.2.0",
     "typescript": "^5.7.2"
   }
 }
