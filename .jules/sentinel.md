@@ -6,3 +6,7 @@
 **Vulnerability:** XSS vulnerability due to embedding `JSON.stringify` directly in `<script>` tags using `set:html` in Astro components without escaping characters.
 **Learning:** Browsers process `</script>` tags directly even if they are within a JavaScript string / JSON content, ending the script execution context prematurely and executing whatever follows. This allows executing arbitrary injected javascript.
 **Prevention:** Use `.replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")` whenever writing `JSON.stringify` results to inline script tags in HTML to prevent XSS breakout.
+## 2025-05-24 - [Fix XSS Vulnerabilities in .innerHTML Assignments]
+**Vulnerability:** XSS vulnerabilities can occur when assigning strings containing unescaped template variables (including HTML attributes, fallback values like `a ?? b`, or dynamically generated variables) to `.innerHTML`.
+**Learning:** Even if a variable is used inside an HTML attribute or is a formatted string, it must be properly escaped before being injected into `.innerHTML` to prevent Cross-Site Scripting (XSS).
+**Prevention:** Always wrap all variables injected into `.innerHTML` templates with an HTML escape function (like `esc()` or `escapeHtml()`).
