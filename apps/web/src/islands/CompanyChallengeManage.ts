@@ -115,7 +115,7 @@ function renderProposals(root: HTMLElement, proposals: Awaited<ReturnType<typeof
       <li class="rounded-lg border border-slate-100 bg-slate-50 p-3">
         <p class="font-medium text-slate-800">${escapeHtml(p.title)}</p>
         <p class="mt-1 text-xs text-slate-500">
-          ${escapeHtml(proposalStatusLabels[p.status] ?? p.status)} · ${formatDate(p.created_at)}
+          ${escapeHtml(proposalStatusLabels[p.status] ?? p.status)} · ${escapeHtml(formatDate(p.created_at))}
         </p>
       </li>`,
     )

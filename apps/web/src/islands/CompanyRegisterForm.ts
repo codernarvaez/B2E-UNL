@@ -449,7 +449,7 @@ function setFieldValid(input: HTMLInputElement) {
   if (icon) icon.classList.remove("hidden");
 }
 
-function setFieldInvalid(input: HTMLInputElement, message: string) {
+function setFieldInvalid(input: HTMLInputElement, _message?: string) {
   input.classList.remove("border-green-500", "bg-green-50");
   input.classList.add("border-red-500", "bg-red-50");
 
