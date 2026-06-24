@@ -1,7 +1,7 @@
 ---
-import { needsCompanyProfileCompletion, dashboardPathForRole } from "@/lib/auth/company-profile";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { dashboardPathForRole, needsCompanyProfileCompletion } from "@/lib/auth/company-profile";
 import { fetchMyProfile } from "@/lib/supabase/profile";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const code = Astro.url.searchParams.get("code");
 const intentParam = Astro.url.searchParams.get("intent");
