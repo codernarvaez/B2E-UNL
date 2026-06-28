@@ -6,3 +6,7 @@
 **Vulnerability:** XSS vulnerability due to embedding `JSON.stringify` directly in `<script>` tags using `set:html` in Astro components without escaping characters.
 **Learning:** Browsers process `</script>` tags directly even if they are within a JavaScript string / JSON content, ending the script execution context prematurely and executing whatever follows. This allows executing arbitrary injected javascript.
 **Prevention:** Use `.replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")` whenever writing `JSON.stringify` results to inline script tags in HTML to prevent XSS breakout.
+## 2025-05-23 - [Fix] Escape fallback values in template literals assigned to innerHTML
+**Vulnerability:** XSS vulnerability due to unescaped fallback values in template literals assigned to `innerHTML`. For example, using `${labels[key] ?? key}` where `key` is unescaped user input (e.g., `u.role` or `c.status`) can allow arbitrary script execution if the key is not found in the dictionary and defaults to the raw input.
+**Learning:** All dynamic values, including dictionary fallbacks (`obj[key] ?? key`) and primary keys (`c.id`), must be explicitly passed through an escape function (like `esc()` or `escapeHtml()`) before being injected into the DOM via `.innerHTML`, even if they are expected to only contain safe data types like UUIDs or known role strings.
+**Prevention:** Always wrap all variables (including fallbacks) with `esc()` or `escapeHtml()` when constructing HTML strings for `.innerHTML` assignments in frontend islands.
