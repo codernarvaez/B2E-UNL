@@ -52,6 +52,7 @@ const sessionBootstrapJson = sessionInfo ? JSON.stringify(sessionInfo)
     {
       sessionBootstrapJson && (
         <script
+          is:inline
           id="session-bootstrap"
           type="application/json"
           set:html={sessionBootstrapJson}
