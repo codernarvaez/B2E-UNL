@@ -88,7 +88,7 @@ async function renderCategories(root: HTMLElement, selectedIds: Set<string>) {
       .map(
         (cat) => `
         <label class="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 hover:border-brand-300">
-          <input type="checkbox" name="category_ids" value="${escapeHtml(cat.id)}" class="mt-1"
+          <input type="checkbox" name="category_ids" value="${cat.id}" class="mt-1"
             ${selectedIds.has(cat.id) ? "checked" : ""} />
           <span>
             <span class="font-medium text-slate-800">${escapeHtml(cat.name_es)}</span>
