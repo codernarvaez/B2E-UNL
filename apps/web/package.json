@@ -11,11 +11,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^9.1.0",
+    "@astrojs/node": "^9.5.5",
     "@astrojs/tailwind": "^6.0.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
-    "astro": "^6.3.8",
+    "astro": "^5.18.2",
     "b2e-monorepo": "file:../..",
     "dompurify": "^3.4.5",
     "tailwindcss": "^3.4.17",
