@@ -6,3 +6,7 @@
 **Vulnerability:** XSS vulnerability due to embedding `JSON.stringify` directly in `<script>` tags using `set:html` in Astro components without escaping characters.
 **Learning:** Browsers process `</script>` tags directly even if they are within a JavaScript string / JSON content, ending the script execution context prematurely and executing whatever follows. This allows executing arbitrary injected javascript.
 **Prevention:** Use `.replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")` whenever writing `JSON.stringify` results to inline script tags in HTML to prevent XSS breakout.
+## 2025-05-24 - [Fix] Missing HTML Escaping for Dynamic Attributes and Fallbacks in `.innerHTML`
+**Vulnerability:** Cross-Site Scripting (XSS) vulnerability due to missing HTML escaping for dynamic variables injected into attributes (e.g. `data-id="${c.id}"`) and fallback strings (e.g. `${statusLabels[c.status] ?? c.status}`) when constructing HTML strings passed to `.innerHTML` in frontend islands (`AdminPanel.ts`, `CompanyChallengeForm.ts`).
+**Learning:** Even if data seems safe or comes from controlled maps (like status labels), any dynamic data interpolated into `.innerHTML` strings must be explicitly escaped, including attributes and nullish coalescing fallbacks, to prevent XSS.
+**Prevention:** Always wrap every dynamic variable, including object keys, values, and attributes with HTML escape functions (like `esc()` or `escapeHtml()`) before injecting them into `.innerHTML`.
