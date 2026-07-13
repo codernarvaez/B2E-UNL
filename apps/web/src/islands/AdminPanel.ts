@@ -141,11 +141,11 @@ function renderCompanies(container: HTMLElement, profiles: ProfileRow[]) {
           <p class="text-sm text-slate-500">Contacto: ${esc(c.contact_email ?? "")}</p>
         </div>
         <div class="flex gap-2">
-          <button type="button" data-action="approve-company" data-id="${c.id}"
+          <button type="button" data-action="approve-company" data-id="${esc(c.id)}"
             class="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">
             Aprobar
           </button>
-          <button type="button" data-action="reject-company" data-id="${c.id}"
+          <button type="button" data-action="reject-company" data-id="${esc(c.id)}"
             class="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50">
             Rechazar
           </button>
@@ -165,9 +165,9 @@ function renderAccounts(container: HTMLElement, profiles: ProfileRow[]) {
     <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm">
       <div>
         <p class="font-medium">${esc(u.full_name)}</p>
-        <p class="text-slate-500">${roleLabels[u.role] ?? u.role}${u.organization_name ? ` · ${esc(u.organization_name)}` : ""}</p>
+        <p class="text-slate-500">${esc(roleLabels[u.role] ?? u.role)}${u.organization_name ? ` · ${esc(u.organization_name)}` : ""}</p>
       </div>
-      ${u.role === "company" ? `<span class="rounded-full px-2 py-0.5 text-xs font-medium ${badgeClass(u.approval_status)}">${approvalLabels[u.approval_status] ?? u.approval_status}</span>` : ""}
+      ${u.role === "company" ? `<span class="rounded-full px-2 py-0.5 text-xs font-medium ${esc(badgeClass(u.approval_status))}">${esc(approvalLabels[u.approval_status] ?? u.approval_status)}</span>` : ""}
     </li>`,
     )
     .join("");
@@ -185,16 +185,16 @@ function renderChallenges(container: HTMLElement, challenges: AdminChallengeRow[
       (c) => `
     <article class="rounded-lg border border-slate-200 bg-white p-4">
       <h3 class="font-semibold">${esc(c.title)}</h3>
-      <p class="mt-1 text-sm text-slate-500">${esc(c.organization_name ?? "—")} · ${statusLabels[c.status] ?? c.status}${c.published_at ? " · Publicado" : " · Sin publicar"}</p>
+      <p class="mt-1 text-sm text-slate-500">${esc(c.organization_name ?? "—")} · ${esc(statusLabels[c.status] ?? c.status)}${c.published_at ? " · Publicado" : " · Sin publicar"}</p>
       <p class="mt-2 line-clamp-2 text-sm text-slate-600">${esc(c.description)}</p>
       <div class="mt-3 flex flex-wrap gap-2">
-        <button type="button" data-action="challenge-status" data-id="${c.id}" data-status="under_review"
+        <button type="button" data-action="challenge-status" data-id="${esc(c.id)}" data-status="under_review"
           class="rounded border px-2 py-1 text-xs hover:bg-slate-50">En evaluación</button>
-        <button type="button" data-action="challenge-status" data-id="${c.id}" data-status="in_development"
+        <button type="button" data-action="challenge-status" data-id="${esc(c.id)}" data-status="in_development"
           class="rounded border px-2 py-1 text-xs hover:bg-slate-50">En desarrollo</button>
-        <button type="button" data-action="challenge-status" data-id="${c.id}" data-status="open" data-publish="true"
+        <button type="button" data-action="challenge-status" data-id="${esc(c.id)}" data-status="open" data-publish="true"
           class="rounded bg-brand-600 px-2 py-1 text-xs text-white hover:bg-brand-700">Publicar</button>
-        <button type="button" data-action="challenge-status" data-id="${c.id}" data-status="closed"
+        <button type="button" data-action="challenge-status" data-id="${esc(c.id)}" data-status="closed"
           class="rounded border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50">Cerrar</button>
       </div>
     </article>`,
