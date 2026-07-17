@@ -68,7 +68,7 @@ jobs:
         run: npm run check
 
       - name: Build producción
-        run: npm run build:ci || true
+        run: npm run build:ci
 
   ci-summary:
     name: CI — resumen
