@@ -62,13 +62,13 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Astro check
-        run: npm run check
+        run: npm run check --legacy-peer-deps
 
       - name: Build producción
-        run: npm run build:ci
+        run: npm run build:ci --legacy-peer-deps
 
   ci-summary:
     name: CI — resumen
