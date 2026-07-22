@@ -109,7 +109,7 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
     if not response.is_success:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Supabase Auth respondió HTTP {response.status_code}",
+            detail="Servicio de autenticación no disponible",
         )
 
     user = response.json()
