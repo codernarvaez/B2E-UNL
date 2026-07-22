@@ -1,9 +1,3 @@
-## 2026-05-29 - Prevent Information Leakage in JWT Verification
-
-**Vulnerability:** The API returned specific backend infrastructure details ("Supabase Auth" and internal HTTP status codes) to unauthenticated users when JWT verification via the fallback service failed. This is a form of information leakage.
-**Learning:** Exception handling paths, particularly those related to authentication and upstream services, must be carefully reviewed to ensure they fail securely and emit generic error messages to the client.
-**Prevention:** Avoid embedding internal error states or dependency names (like Supabase Auth, database errors, etc.) in user-facing HTTP response details.
-
 ## 2025-05-21 - [Escape Single Quotes in HTML Content]
 **Vulnerability:** The HTML escape functions `esc` and `escapeHtml` in the frontend code (`apps/web/src/islands/AdminPanel.ts`, `apps/web/src/islands/CompanyChallengeManage.ts`, `apps/web/src/islands/CompanyChallengeForm.ts`) were only escaping `&`, `<`, `>`, and `"`. This left single quotes (`'`) unescaped, which can be an XSS vulnerability when user input is injected into an attribute that uses single quotes.
 **Learning:** Even if it seems that single quotes are not used for attributes in the current templates, escaping them is a standard defense-in-depth practice.
