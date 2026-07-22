@@ -14,7 +14,7 @@
 **Learning:** Browsers process `</script>` tags directly even if they are within a JavaScript string / JSON content, ending the script execution context prematurely and executing whatever follows. This allows executing arbitrary injected javascript.
 **Prevention:** Use `.replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")` whenever writing `JSON.stringify` results to inline script tags in HTML to prevent XSS breakout.
 
-## 2024-05-30 - Fix set:html warning and XSS risk with is:inline
-**Vulnerability:** While Astro normally escapes variables, `set:html` directly injects unsanitized strings as HTML. When used on a `<script>` tag *without* the `is:inline` directive, it also attempts to evaluate it using internal component bundle logic or issues warnings about unavailable features since it hasn't processed the script content.
-**Learning:** For scripts that you intentionally render raw JSON into using `set:html`, you must pair it with `is:inline` so Astro properly bypasses its own processing and correctly emits the raw `<script>` tag.
-**Prevention:** Whenever generating inline data scripts (like JSON payloads for islands), always use `<script type="application/json" set:html={data} is:inline />` to avoid bundling/processing warnings and to ensure proper execution contexts.
+## 2026-06-02 - [Fix XSS Vulnerability in Template Interpolation]
+**Vulnerability:** In frontend island scripts (e.g. `AdminPanel.ts` and `CompanyChallengeForm.ts`), dynamic properties such as IDs, roles, and mapped statuses were injected directly into `.innerHTML` templates without escaping. Even if mapped labels or UUIDs seem safe, injecting them unescaped creates a Cross-Site Scripting (XSS) vulnerability, particularly if backend constraints change or an attacker finds a way to mutate those specific fields.
+**Learning:** Relying on the "assumed format" of dynamic variables (like UUIDs or hardcoded role arrays) is insufficient for security. All data retrieved from external sources or the database must be escaped when written to `.innerHTML` strings as a standard defense-in-depth practice.
+**Prevention:** Consistently use the existing `esc()` or `escapeHtml()` utility functions on every dynamic variable before concatenating or interpolating it into HTML structures.
