@@ -75,9 +75,7 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
     if not anon_key or anon_key == "your-anon-key":
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "Servicio de autenticación temporalmente no disponible"
-            ),
+            detail=("Servicio de autenticación temporalmente no disponible"),
         )
 
     url = f"{settings.supabase_url.rstrip('/')}/auth/v1/user"
