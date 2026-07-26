@@ -76,8 +76,7 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=(
-                "La API no puede validar sesiones: configura SUPABASE_JWT_SECRET "
-                "(Dashboard → Settings → API → JWT Secret) o SUPABASE_ANON_KEY en .env"
+                "Servicio de autenticación temporalmente no disponible"
             ),
         )
 
@@ -94,7 +93,7 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
     except httpx.RequestError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="No se pudo contactar a Supabase Auth para validar el token",
+            detail="Servicio de autenticación temporalmente no disponible",
         ) from exc
 
     if response.status_code in (
@@ -117,7 +116,7 @@ def _verify_jwt_via_supabase_auth(token: str) -> TokenPayload:
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Respuesta de Supabase Auth sin identificador de usuario",
+            detail="Respuesta de autenticación sin identificador de usuario",
         )
 
     return TokenPayload(
