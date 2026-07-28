@@ -36,8 +36,8 @@ def log_auth_config() -> None:
         logger.info("Autenticación JWT: verificación local (SUPABASE_JWT_SECRET configurado).")
     else:
         logger.warning(
-            "SUPABASE_JWT_SECRET no configurado — la API validará tokens vía Supabase Auth. "
-            "Para producción, copia el JWT Secret del dashboard a .env."
+            "Advertencia: validación de tokens vía servicio externo. "
+            "Considera configurar la validación local."
         )
 
 
