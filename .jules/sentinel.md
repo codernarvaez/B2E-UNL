@@ -18,3 +18,8 @@
 **Vulnerability:** In frontend island scripts (e.g. `AdminPanel.ts` and `CompanyChallengeForm.ts`), dynamic properties such as IDs, roles, and mapped statuses were injected directly into `.innerHTML` templates without escaping. Even if mapped labels or UUIDs seem safe, injecting them unescaped creates a Cross-Site Scripting (XSS) vulnerability, particularly if backend constraints change or an attacker finds a way to mutate those specific fields.
 **Learning:** Relying on the "assumed format" of dynamic variables (like UUIDs or hardcoded role arrays) is insufficient for security. All data retrieved from external sources or the database must be escaped when written to `.innerHTML` strings as a standard defense-in-depth practice.
 **Prevention:** Consistently use the existing `esc()` or `escapeHtml()` utility functions on every dynamic variable before concatenating or interpolating it into HTML structures.
+
+## 2026-06-05 - [Fix Information Disclosure in JWT Verification]
+**Vulnerability:** The API returned specific backend infrastructure details ("Supabase Auth" and internal HTTP status codes), along with environment variable names like "SUPABASE_JWT_SECRET" and "SUPABASE_ANON_KEY", to unauthenticated users when JWT verification via the fallback service failed or was unconfigured. This is a form of information leakage.
+**Learning:** Exception handling paths, particularly those related to authentication and upstream services, must be carefully reviewed to ensure they fail securely and emit generic error messages to the client.
+**Prevention:** Avoid embedding internal error states, dependency names (like Supabase Auth, database errors, etc.), or environment variable names in user-facing HTTP response details.
