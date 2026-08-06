@@ -18,3 +18,8 @@
 **Vulnerability:** In frontend island scripts (e.g. `AdminPanel.ts` and `CompanyChallengeForm.ts`), dynamic properties such as IDs, roles, and mapped statuses were injected directly into `.innerHTML` templates without escaping. Even if mapped labels or UUIDs seem safe, injecting them unescaped creates a Cross-Site Scripting (XSS) vulnerability, particularly if backend constraints change or an attacker finds a way to mutate those specific fields.
 **Learning:** Relying on the "assumed format" of dynamic variables (like UUIDs or hardcoded role arrays) is insufficient for security. All data retrieved from external sources or the database must be escaped when written to `.innerHTML` strings as a standard defense-in-depth practice.
 **Prevention:** Consistently use the existing `esc()` or `escapeHtml()` utility functions on every dynamic variable before concatenating or interpolating it into HTML structures.
+
+## 2024-05-24 - Information Leakage in API Exceptions
+**Vulnerability:** HTTPException details in FastAPI were exposing internal backend infrastructure details, dependency names (like Supabase Auth), and configuration environment variables (like SUPABASE_JWT_SECRET).
+**Learning:** Exposing internal system details in error messages can provide attackers with valuable information about the application's architecture and configuration, aiding in further attacks.
+**Prevention:** Always use generic error messages for the `detail` parameter when raising HTTPExceptions in FastAPI. Never leak internal backend infrastructure details or environment variables.
